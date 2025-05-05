@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">OinkVest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+<header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center gap-8">
+        <h1 class="text-xl font-bold text-indigo-600">OinkVest</h1>
+        <nav class="space-x-4">
+            <a href="/dashboard" class="hover:underline">Dashboard</a>
+            <a href="/wallet" class="hover:underline">Carteira</a>
+            <a href="/history" class="hover:underline">Histórico</a>
+            <a href="/notifications" class="hover:underline">Alertas</a>
+            <a href="/support" class="hover:underline">Suporte</a>
+        </nav>
+    </div>
+    <form th:action="@{/logout}" method="post">
+        <button class="text-sm bg-white border px-4 py-1 rounded">Sair</button>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+</header>
+
+<main th:replace="~{${content} :: content}">Conteúdo</main>
+
+</body>
+</html>
