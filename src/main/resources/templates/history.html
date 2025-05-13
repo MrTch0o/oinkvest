@@ -1,80 +1,44 @@
 <div th:fragment="content">
-    <div class="p-6">
-      <h1 class="text-2xl font-bold mb-2">Histórico de Operações</h1>
-      <p class="text-gray-500 mb-6">Visualize todas as suas transações e operações</p>
-  
-      <div class="bg-white shadow rounded p-4">
-        <h2 class="text-lg font-semibold mb-1">Todas as Transações</h2>
-        <p class="text-sm text-gray-400 mb-4">Histórico completo de depósitos, saques, compras e vendas</p>
-        
-        <div class="flex mb-4 w-full">
-          <input type="text" placeholder="Buscar por moeda ou tipo de operação..."
-                class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <!-- botão de pesquisa -->
-          <button class="flex items-center justify-center px-4 border border-l-0 border-gray-300 bg-blue-500 hover:bg-blue-600 text-white rounded-r-md">
-            <!-- Ícone de lupa -->
-            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z" />
-            </svg>
-          </button>
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-2">Histórico de Operações</h1>
+    <p class="text-gray-500 mb-6">Visualize todas as suas transações e operações</p>
+
+    <div class="bg-white shadow rounded p-4">
+      <h2 class="text-lg font-semibold mb-1">Todas as Transações</h2>
+      <p class="text-sm text-gray-400 mb-4">Histórico completo de depósitos, saques, compras e vendas</p>
+
+      <div class="flex mb-4 w-full">
+        <input type="text" placeholder="Buscar por moeda ou tipo de operação..."
+              class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button class="flex items-center justify-center px-4 border border-l-0 border-gray-300 bg-blue-500 hover:bg-blue-600 text-white rounded-r-md">
+          <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z" />
+          </svg>
+        </button>
       </div>
 
-
-        <table class="w-full text-left">
-          <thead>
-            <tr class="border-b">
-              <th class="py-2">Data</th>
-              <th class="py-2">Tipo</th>
-              <th class="py-2">Moeda</th>
-              <th class="py-2">Quantidade</th>
-              <th class="py-2">Preço</th>
-              <th class="py-2">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b">
-              <td class="py-2 font-semibold">04/05/2025, 14:23:11</td>
-              <td class="py-2 text-green-600">Depósito</td>
-              <td class="py-2">USDT</td>
-              <td class="py-2">1000</td>
-              <td class="py-2">$1.00</td>
-              <td class="py-2 font-semibold">$1000.00</td>
-            </tr>
-            <tr class="border-b">
-              <td class="py-2 font-semibold">04/05/2025, 14:30:45</td>
-              <td class="py-2 text-blue-600">Compra</td>
-              <td class="py-2">BTC</td>
-              <td class="py-2">0.02</td>
-              <td class="py-2">$43120.50</td>
-              <td class="py-2 font-semibold">$862.41</td>
-            </tr>
-            <tr class="border-b">
-              <td class="py-2 font-semibold">03/05/2025, 09:15:22</td>
-              <td class="py-2 text-blue-600">Compra</td>
-              <td class="py-2">ETH</td>
-              <td class="py-2">0.5</td>
-              <td class="py-2">$3105.75</td>
-              <td class="py-2 font-semibold">$1552.88</td>
-            </tr>
-            <tr class="border-b">
-              <td class="py-2 font-semibold">02/05/2025, 16:42:10</td>
-              <td class="py-2 text-orange-600">Venda</td>
-              <td class="py-2">BTC</td>
-              <td class="py-2">0.005</td>
-              <td class="py-2">$42980.25</td>
-              <td class="py-2 font-semibold">$214.90</td>
-            </tr>
-            <tr>
-              <td class="py-2 font-semibold">01/05/2025, 11:05:38</td>
-              <td class="py-2 text-red-600">Saque</td>
-              <td class="py-2">USDT</td>
-              <td class="py-2">200</td>
-              <td class="py-2">$1.00</td>
-              <td class="py-2 font-semibold">$200.00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b">
+            <th class="py-2">Data</th>
+            <th class="py-2">Tipo</th>
+            <th class="py-2">Moeda</th>
+            <th class="py-2">Quantidade</th>
+            <th class="py-2">Preço</th>
+            <th class="py-2">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="op : ${operacoes}" class="border-b">
+            <td class="py-2 font-semibold" th:text="${#temporals.format(op.dataHora, 'dd/MM/yyyy, HH:mm:ss')}"></td>
+            <td class="py-2" th:text="${op.tipo}"></td>
+            <td class="py-2" th:text="${op.moeda}"></td>
+            <td class="py-2" th:text="${op.quantidade}"></td>
+            <td class="py-2" th:text="'$' + ${#numbers.formatDecimal(op.valor / op.quantidade, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td class="py-2 font-semibold" th:text="'$' + ${#numbers.formatDecimal(op.valor, 1, 'COMMA', 2, 'POINT')}"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  
+</div>

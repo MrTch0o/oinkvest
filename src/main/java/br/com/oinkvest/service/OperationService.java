@@ -1,13 +1,15 @@
 package br.com.oinkvest.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Operacao.TipoOperacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.repository.OperacaoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class OperationService {
@@ -27,4 +29,8 @@ public class OperationService {
 
         return operacaoRepository.save(operacao);
     }
+
+    public List<Operacao> listarPorUsuario(Usuario usuario) {
+    return operacaoRepository.findByUsuario(usuario);
+}
 }
