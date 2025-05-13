@@ -6,10 +6,20 @@
       <div class="bg-white shadow rounded p-4">
         <h2 class="text-lg font-semibold mb-1">Todas as Transações</h2>
         <p class="text-sm text-gray-400 mb-4">Histórico completo de depósitos, saques, compras e vendas</p>
-  
-        <input type="text" placeholder="Buscar por moeda ou tipo de operação..." 
-               class="w-full mb-4 px-4 py-2 border border-gray-300 rounded">
-  
+        
+        <div class="flex mb-4 w-full">
+          <input type="text" placeholder="Buscar por moeda ou tipo de operação..."
+                class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <!-- botão de pesquisa -->
+          <button class="flex items-center justify-center px-4 border border-l-0 border-gray-300 bg-blue-500 hover:bg-blue-600 text-white rounded-r-md">
+            <!-- Ícone de lupa -->
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z" />
+            </svg>
+          </button>
+      </div>
+
+
         <table class="w-full text-left">
           <thead>
             <tr class="border-b">
