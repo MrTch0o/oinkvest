@@ -1,70 +1,103 @@
 <div th:fragment="content" class="p-6 space-y-6">
-    <h1 class="text-2xl font-bold text-gray-900">Sua Carteira</h1>
-    <p class="text-gray-500">Gerencie seus fundos e visualize seus ativos</p>
-  
-    <!-- Saldos -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="rounded-xl border p-4 bg-white shadow-sm">
-        <p class="text-gray-600">Saldo Total</p>
-        <p class="text-sm text-gray-400">Em todas as moedas</p>
-        <p class="text-2xl font-bold text-gray-800">$10245.30</p>
-      </div>
-      <div class="rounded-xl border p-4 bg-white shadow-sm">
-        <p class="text-gray-600">Saldo USDT</p>
-        <p class="text-sm text-gray-400">Disponível para operações</p>
-        <p class="text-2xl font-bold text-gray-800">$5120.50</p>
-      </div>
-      <div class="rounded-xl border p-4 bg-white shadow-sm">
-        <p class="text-gray-600">Valor em Ativos</p>
-        <p class="text-sm text-gray-400">Criptomoedas adquiridas</p>
-        <p class="text-2xl font-bold text-gray-800">$5124.80</p>
-      </div>
+  <h1 class="text-2xl font-bold text-gray-900">Sua Carteira</h1>
+  <p class="text-gray-500">Gerencie seus fundos e visualize seus ativos</p>
+
+  <!-- Saldos -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="rounded-xl border p-4 bg-white shadow-sm">
+      <p class="text-gray-600">Saldo Total</p>
+      <p class="text-sm text-gray-400">Em todas as moedas</p>
+      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoTotal, 1, 'COMMA', 2, 'POINT')}"></p>
     </div>
-  
-    <!-- Operações e ativos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Operações -->
-      <div class="rounded-xl border p-6 bg-white shadow-sm">
-        <p class="text-lg font-semibold text-gray-800 mb-2">Operações USDT</p>
-        <p class="text-sm text-gray-500 mb-4">Depósito e saque de fundos</p>
-        <div class="flex space-x-2 mb-4">
-          <button class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Depósito</button>
-          <button class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Saque</button>
-        </div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Valor a depositar (USDT)</label>
-        <input type="number" step="0.01" class="w-full border rounded-md px-3 py-2 mb-4" placeholder="0.00"/>
-        <button class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800">
-          Depositar USDT
-        </button>
-      </div>
-  
-      <!-- Ativos -->
-      <div class="rounded-xl border p-6 bg-white shadow-sm">
-        <p class="text-lg font-semibold text-gray-800 mb-4">Seus Ativos</p>
-        <ul class="space-y-2 text-sm text-gray-700">
-          <li class="flex justify-between">
-            <div>
-              <strong>Bitcoin (BTC)</strong><br/>
-              0.05 BTC (Preço médio: $43000.18)
-            </div>
-            <div class="font-bold">$2162.54</div>
-          </li>
-          <li class="flex justify-between">
-            <div>
-              <strong>Ethereum (ETH)</strong><br/>
-              0.95 ETH (Preço médio: $3120.42)
-            </div>
-            <div class="font-bold">$2964.40</div>
-          </li>
-          <li class="flex justify-between">
-            <div>
-              <strong>Binance Coin (BNB)</strong><br/>
-              0 BNB
-            </div>
-            <div class="font-bold">$0.00</div>
-          </li>
-        </ul>
-      </div>
+    <div class="rounded-xl border p-4 bg-white shadow-sm">
+      <p class="text-gray-600">Saldo USDT</p>
+      <p class="text-sm text-gray-400">Disponível para operações</p>
+      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 2, 'POINT')}"></p>
+
+    </div>
+    <div class="rounded-xl border p-4 bg-white shadow-sm">
+      <p class="text-gray-600">Valor em Ativos</p>
+      <p class="text-sm text-gray-400">Criptomoedas adquiridas</p>
+      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoTrade, 1, 'COMMA', 2, 'POINT')}"></p>
+
     </div>
   </div>
-  
+
+  <!-- Operações e ativos -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Operações -->
+    <div class="rounded-xl border p-6 bg-white shadow-sm">
+      <p class="text-lg font-semibold text-gray-800 mb-2">Operações USDT</p>
+      <p class="text-sm text-gray-500 mb-4">Depósito e saque de fundos</p>
+
+      <form th:action="@{/wallet/operar}" method="post" class="space-y-4">
+        <!-- Botões de troca -->
+        <div class="flex space-x-2">
+          <button type="button" id="btnDeposito" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Depósito</button>
+          <button type="button" id="btnSaque" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Saque</button>
+        </div>
+
+        <!-- Tipo da operação -->
+        <input type="hidden" name="tipo" id="tipoOperacao" value="DEPOSITO" />
+
+        <!-- Campo de valor -->
+        <label class="block text-sm font-medium text-gray-600 mb-1" id="labelValor">Valor a depositar (USDT)</label>
+        <input type="number" step="0.01" name="valor" class="w-full border rounded-md px-3 py-2 mb-4" placeholder="0.00" required />
+
+        <!-- Botão de ação -->
+        <button type="submit" id="botaoAcao" class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800">
+          Depositar USDT
+        </button>
+      </form>
+    </div>
+
+    <!-- Ativos -->
+    <div class="rounded-xl border p-6 bg-white shadow-sm">
+      <p class="text-lg font-semibold text-gray-800 mb-4">Seus Ativos</p>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex justify-between">
+          <div>
+            <strong>Bitcoin (BTC)</strong><br />
+            0.05 BTC (Preço médio: $43000.18)
+          </div>
+          <div class="font-bold">$2162.54</div>
+        </li>
+        <li class="flex justify-between">
+          <div>
+            <strong>Ethereum (ETH)</strong><br />
+            0.95 ETH (Preço médio: $3120.42)
+          </div>
+          <div class="font-bold">$2964.40</div>
+        </li>
+        <li class="flex justify-between">
+          <div>
+            <strong>Binance Coin (BNB)</strong><br />
+            0 BNB
+          </div>
+          <div class="font-bold">$0.00</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Script para alternar entre Depósito e Saque -->
+  <script>
+    const btnDeposito = document.getElementById('btnDeposito');
+    const btnSaque = document.getElementById('btnSaque');
+    const botaoAcao = document.getElementById('botaoAcao');
+    const labelValor = document.getElementById('labelValor');
+    const tipoOperacao = document.getElementById('tipoOperacao');
+
+    btnDeposito.addEventListener('click', () => {
+      tipoOperacao.value = 'DEPOSITO';
+      botaoAcao.textContent = 'Depositar USDT';
+      labelValor.textContent = 'Valor a depositar (USDT)';
+    });
+
+    btnSaque.addEventListener('click', () => {
+      tipoOperacao.value = 'SAQUE';
+      botaoAcao.textContent = 'Sacar USDT';
+      labelValor.textContent = 'Valor a sacar (USDT)';
+    });
+  </script>
+</div>
