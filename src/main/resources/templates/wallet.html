@@ -2,24 +2,39 @@
   <h1 class="text-2xl font-bold text-gray-900">Sua Carteira</h1>
   <p class="text-gray-500">Gerencie seus fundos e visualize seus ativos</p>
 
+  <div
+    th:if="${error}"
+    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+  >
+    <strong class="font-bold">Erro:</strong>
+    <span th:text="${error}">Erro ao processar a operação.</span>
+  </div>
+
   <!-- Saldos -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="rounded-xl border p-4 bg-white shadow-sm">
       <p class="text-gray-600">Saldo Total</p>
       <p class="text-sm text-gray-400">Em todas as moedas</p>
-      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoTotal, 1, 'COMMA', 2, 'POINT')}"></p>
+      <p
+        class="text-2xl font-bold text-gray-800"
+        th:text="${#numbers.formatDecimal(saldoTotal, 1, 'COMMA', 2, 'POINT')}"
+      ></p>
     </div>
     <div class="rounded-xl border p-4 bg-white shadow-sm">
       <p class="text-gray-600">Saldo USDT</p>
       <p class="text-sm text-gray-400">Disponível para operações</p>
-      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 2, 'POINT')}"></p>
-
+      <p
+        class="text-2xl font-bold text-gray-800"
+        th:text="${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 2, 'POINT')}"
+      ></p>
     </div>
     <div class="rounded-xl border p-4 bg-white shadow-sm">
       <p class="text-gray-600">Valor em Ativos</p>
       <p class="text-sm text-gray-400">Criptomoedas adquiridas</p>
-      <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(saldoTrade, 1, 'COMMA', 2, 'POINT')}"></p>
-
+      <p
+        class="text-2xl font-bold text-gray-800"
+        th:text="${#numbers.formatDecimal(saldoTrade, 1, 'COMMA', 2, 'POINT')}"
+      ></p>
     </div>
   </div>
 
@@ -33,19 +48,46 @@
       <form th:action="@{/wallet/operar}" method="post" class="space-y-4">
         <!-- Botões de troca -->
         <div class="flex space-x-2">
-          <button type="button" id="btnDeposito" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Depósito</button>
-          <button type="button" id="btnSaque" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold">Saque</button>
+          <button
+            type="button"
+            id="btnDeposito"
+            class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold"
+          >
+            Depósito
+          </button>
+          <button
+            type="button"
+            id="btnSaque"
+            class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold"
+          >
+            Saque
+          </button>
         </div>
 
         <!-- Tipo da operação -->
         <input type="hidden" name="tipo" id="tipoOperacao" value="DEPOSITO" />
 
         <!-- Campo de valor -->
-        <label class="block text-sm font-medium text-gray-600 mb-1" id="labelValor">Valor a depositar (USDT)</label>
-        <input type="number" step="0.01" name="valor" class="w-full border rounded-md px-3 py-2 mb-4" placeholder="0.00" required />
+        <label
+          class="block text-sm font-medium text-gray-600 mb-1"
+          id="labelValor"
+          >Valor a depositar (USDT)</label
+        >
+        <input
+          type="number"
+          step="0.01"
+          name="valor"
+          class="w-full border rounded-md px-3 py-2 mb-4"
+          placeholder="0.00"
+          required
+        />
 
         <!-- Botão de ação -->
-        <button type="submit" id="botaoAcao" class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800">
+        <button
+          type="submit"
+          id="botaoAcao"
+          class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800"
+        >
           Depositar USDT
         </button>
       </form>
@@ -82,22 +124,22 @@
 
   <!-- Script para alternar entre Depósito e Saque -->
   <script>
-    const btnDeposito = document.getElementById('btnDeposito');
-    const btnSaque = document.getElementById('btnSaque');
-    const botaoAcao = document.getElementById('botaoAcao');
-    const labelValor = document.getElementById('labelValor');
-    const tipoOperacao = document.getElementById('tipoOperacao');
+    const btnDeposito = document.getElementById("btnDeposito");
+    const btnSaque = document.getElementById("btnSaque");
+    const botaoAcao = document.getElementById("botaoAcao");
+    const labelValor = document.getElementById("labelValor");
+    const tipoOperacao = document.getElementById("tipoOperacao");
 
-    btnDeposito.addEventListener('click', () => {
-      tipoOperacao.value = 'DEPOSITO';
-      botaoAcao.textContent = 'Depositar USDT';
-      labelValor.textContent = 'Valor a depositar (USDT)';
+    btnDeposito.addEventListener("click", () => {
+      tipoOperacao.value = "DEPOSITO";
+      botaoAcao.textContent = "Depositar USDT";
+      labelValor.textContent = "Valor a depositar (USDT)";
     });
 
-    btnSaque.addEventListener('click', () => {
-      tipoOperacao.value = 'SAQUE';
-      botaoAcao.textContent = 'Sacar USDT';
-      labelValor.textContent = 'Valor a sacar (USDT)';
+    btnSaque.addEventListener("click", () => {
+      tipoOperacao.value = "SAQUE";
+      botaoAcao.textContent = "Sacar USDT";
+      labelValor.textContent = "Valor a sacar (USDT)";
     });
   </script>
 </div>
