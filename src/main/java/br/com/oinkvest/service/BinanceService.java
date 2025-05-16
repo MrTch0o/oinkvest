@@ -17,6 +17,7 @@ public class BinanceService {
         String url = "https://api.binance.com/api/v3/exchangeInfo";
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
+        @SuppressWarnings("null")
         List<Map<String, Object>> symbols = (List<Map<String, Object>>) response.get("symbols");
 
         return symbols.stream()
@@ -38,11 +39,12 @@ public class BinanceService {
     public String obterNomeCompleto(String symbol) {
         String url = "https://api.binance.com/api/v3/exchangeInfo";
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        @SuppressWarnings("null")
         List<Map<String, Object>> symbols = (List<Map<String, Object>>) response.get("symbols");
 
         return symbols.stream()
                 .filter(s -> symbol.equals(s.get("symbol")))
-                .map(s -> (String) s.get("baseAsset"))  // Ex: BTC
+                .map(s -> (String) s.get("baseAsset")) // Ex: BTC
                 .findFirst()
                 .orElse(symbol);
     }
