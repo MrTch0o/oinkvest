@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 import br.com.oinkvest.config.UsuarioDetails;
 import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.Operacao;

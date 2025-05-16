@@ -17,7 +17,8 @@ public class OperationService {
     @Autowired
     private OperacaoRepository operacaoRepository;
 
-    public Operacao registrarOperacao(Usuario usuario, String moeda, double quantidade, double valor, TipoOperacao tipo) {
+    public Operacao registrarOperacao(Usuario usuario, String moeda, double quantidade, double valor,
+            TipoOperacao tipo) {
         Operacao operacao = Operacao.builder()
                 .usuario(usuario)
                 .moeda(moeda)
@@ -31,6 +32,6 @@ public class OperationService {
     }
 
     public List<Operacao> listarPorUsuario(Usuario usuario) {
-    return operacaoRepository.findByUsuario(usuario);
-}
+        return operacaoRepository.findByUsuario(usuario);
+    }
 }

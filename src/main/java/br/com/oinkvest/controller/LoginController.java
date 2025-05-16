@@ -1,5 +1,6 @@
 package br.com.oinkvest.controller;
 
+import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,13 @@ public class LoginController {
     @PostMapping("/register")
     public String processRegister(@ModelAttribute Usuario usuario) {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+
+        Carteira carteira = new Carteira();
+        carteira.setSaldoFiat(0.0);
+        carteira.setSaldoTrade(0.0);
+        carteira.setUsuario(usuario);
+        usuario.setCarteira(carteira);
+        
         usuarioService.salvar(usuario);
         return "redirect:/login?registered";
     }

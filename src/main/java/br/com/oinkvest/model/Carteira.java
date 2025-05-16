@@ -4,26 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "carteiras")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Carteira {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
-    // Saldo disponível em USDT
-    @Column(nullable = false)
-    private Double saldoFiat;
+    private double saldoFiat;
 
-    // Saldo de moedas compradas (valor agregado)
-    @Column(nullable = false)
-    private Double saldoTrade;
+    private double saldoTrade;
 
     @OneToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    @JoinColumn(name = "usuario_id")
+    @ToString.Exclude
     private Usuario usuario;
 }

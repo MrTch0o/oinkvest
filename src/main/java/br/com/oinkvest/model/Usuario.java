@@ -11,10 +11,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -27,11 +29,14 @@ public class Usuario {
     private String nome;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Carteira carteira;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<Operacao> operacoes;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<Notificacao> notificacoes;
 }

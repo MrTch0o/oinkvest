@@ -1,80 +1,107 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
   <head th:fragment="title">
     <title>Dashboard - OinkVest</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
   </head>
   <body th:fragment="content">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Seletor de moeda e gráfico -->
       <div class="lg:col-span-2 bg-white p-6 rounded shadow">
-        <div class="flex gap-4 mb-4">
-          <button
-            class="px-3 py-1 rounded bg-green-100 text-green-600 font-semibold"
+        <!-- Par e preço -->
+        <form
+          class="flex items-center gap-4 mb-4"
+          method="get"
+          th:action="@{/dashboard}"
+        >
+          <select
+            class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800"
+            id="pair"
+            name="symbol"
+            onchange="this.form.submit()"
           >
-            Bitcoin +2.5%
-          </button>
-          <button
-            class="px-3 py-1 rounded bg-red-100 text-red-600 font-semibold"
-          >
-            Ethereum -1.2%
-          </button>
-          <button
-            class="px-3 py-1 rounded bg-green-100 text-green-600 font-semibold"
-          >
-            Binance Coin +0.8%
-          </button>
-        </div>
-        <h2 class="text-xl font-bold mb-2">Bitcoin ($43250.75)</h2>
-        <canvas id="priceChart" height="120"></canvas>
+            <option
+              th:each="par : ${pares}"
+              th:selected="${par == moedaSelecionada}"
+              th:text="${par}"
+              th:value="${par}"
+            ></option>
+          </select>
+          <div class="text-lg font-medium text-gray-800">
+            <span id="precoAtualHeader" th:text="' ($' + precoAtual + ')'"
+              >($0.00)</span
+            >
+          </div>
+        </form>
+        <!-- Gráfico -->
+        <canvas height="120" id="priceChart"></canvas>
       </div>
-
       <!-- Operações -->
       <div class="space-y-6">
         <div class="bg-white p-6 rounded shadow">
-          <h3 class="text-lg font-bold mb-4">Operar Bitcoin</h3>
-          <label class="block text-sm font-medium text-gray-700"
-            >Preço Atual</label
-          >
-          <input
-            type="text"
-            value="$43250.75"
-            readonly
-            class="w-full mb-2 px-3 py-2 border rounded"
-          />
+          <h3 class="text-lg font-bold mb-4" id="tituloOperacao">
+            Operar BTCUSDT
+          </h3>
 
-          <label class="block text-sm font-medium text-gray-700"
-            >Quantidade</label
+          <form
+            class="space-y-4"
+            method="post"
+            th:action="@{/dashboard/operar}"
           >
-          <input
-            type="number"
-            value="0.00"
-            class="w-full mb-2 px-3 py-2 border rounded"
-          />
-
-          <label class="block text-sm font-medium text-gray-700"
-            >Total Estimado</label
-          >
-          <input
-            type="text"
-            value="$0.00"
-            readonly
-            class="w-full mb-4 px-3 py-2 border rounded"
-          />
-
-          <div class="flex gap-4">
-            <button
-              class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
-            >
-              Comprar
-            </button>
-            <button
-              class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
-            >
-              Vender
-            </button>
-          </div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Total Estimado</label
+            ><label class="block text-sm font-medium text-gray-700"
+              >Quantidade</label
+            ><label class="block text-sm font-medium text-gray-700"
+              >Preço Atual</label
+            ><input
+              id="tipoOperacao"
+              name="tipo"
+              type="hidden"
+              value="COMPRA"
+            /><input
+              name="moeda"
+              th:value="${moedaSelecionada}"
+              type="hidden"
+            /><input id="precoOperacao" name="preco" type="hidden" /><input
+              class="w-full mb-2 px-3 py-2 border rounded"
+              id="precoAtualInput"
+              readonly=""
+              th:value="'$' + precoAtual"
+              type="text"
+            /><input
+              class="w-full mb-2 px-3 py-2 border rounded"
+              id="quantidadeInput"
+              name="quantidade"
+              step="any"
+              type="number"
+              min="0"
+              value="0.00"
+            /><input
+              class="w-full mb-4 px-3 py-2 border rounded"
+              id="totalEstimado"
+              readonly=""
+              type="text"
+              value="$0.00"
+            />
+            <div class="flex gap-4">
+              <button
+                class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                onclick="document.getElementById('tipoOperacao').value='COMPRA'"
+                type="submit"
+              >
+                Comprar</button
+              ><button
+                class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
+                onclick="document.getElementById('tipoOperacao').value='VENDA'"
+                type="submit"
+              >
+                Vender
+              </button>
+            </div>
+          </form>
         </div>
-
         <div class="bg-white p-6 rounded shadow">
           <h3 class="text-lg font-bold mb-4">Resumo da Carteira</h3>
           <p class="text-sm">
@@ -92,7 +119,7 @@
         </div>
       </div>
     </div>
-
+    <!-- Gráfico estático por enquanto -->
     <script>
       const ctx = document.getElementById("priceChart").getContext("2d");
       new Chart(ctx, {
@@ -113,13 +140,57 @@
         },
         options: {
           responsive: true,
-          scales: {
-            y: {
-              beginAtZero: false,
-            },
-          },
+          scales: { y: { beginAtZero: false } },
         },
       });
+    </script>
+    <!-- WebSocket + cálculo total -->
+    <script th:inline="javascript">
+      const parSelecionado = /*[[${moedaSelecionada}]]*/ "BTCUSDT";
+
+      const precoInput = document.getElementById("precoAtualInput");
+      const precoHeader = document.getElementById("precoAtualHeader");
+      const tituloOperacao = document.getElementById("tituloOperacao");
+
+      const quantidadeInput = document.getElementById("quantidadeInput");
+      const totalEstimado = document.getElementById("totalEstimado");
+
+      let precoAtual = 0;
+
+      function atualizarTotal() {
+        const qtd = parseFloat(quantidadeInput.value);
+        if (!isNaN(qtd) && !isNaN(precoAtual)) {
+          const total = qtd * precoAtual;
+          totalEstimado.value = `$${total.toFixed(2)}`;
+        } else {
+          totalEstimado.value = "$0.00";
+        }
+      }
+
+      quantidadeInput.addEventListener("input", atualizarTotal);
+
+      const ws = new WebSocket(
+        "wss://stream.binance.com:9443/ws/" +
+          parSelecionado.toLowerCase() +
+          "@ticker"
+      );
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        precoAtual = parseFloat(data.c).toFixed(2);
+
+        if (precoInput) precoInput.value = `$${precoAtual}`;
+        if (precoHeader) precoHeader.textContent = ` ($${precoAtual})`;
+
+        const precoOperacao = document.getElementById("precoOperacao");
+        if (precoOperacao) precoOperacao.value = precoAtual;
+        atualizarTotal();
+      };
+
+      // opcional: exibir nome do par no título
+      if (tituloOperacao) {
+        tituloOperacao.textContent = `Operar ${parSelecionado}`;
+      }
     </script>
   </body>
 </html>
