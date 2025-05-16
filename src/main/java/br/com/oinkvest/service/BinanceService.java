@@ -16,10 +16,10 @@ public class BinanceService {
     public List<String> listarParesUsdt() {
         String url = "https://api.binance.com/api/v3/exchangeInfo";
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-
-        @SuppressWarnings("null")
+        if (response == null || !response.containsKey("symbols")) {
+            throw new RuntimeException("Erro ao obter os pares da Binance");
+        }
         List<Map<String, Object>> symbols = (List<Map<String, Object>>) response.get("symbols");
-
         return symbols.stream()
                 .filter(symbol -> "SPOT".equals(symbol.get("marketType")) ||
                         Boolean.TRUE.equals(symbol.get("isSpotTradingAllowed")))
@@ -27,11 +27,13 @@ public class BinanceService {
                 .map(symbol -> (String) symbol.get("symbol"))
                 .collect(Collectors.toList());
     }
-
-    @SuppressWarnings("unchecked")
+@SuppressWarnings("unchecked")
     public String obterPrecoAtual(String symbol) {
         String url = "https://api.binance.com/api/v3/ticker/price?symbol=" + symbol;
         Map<String, String> response = restTemplate.getForObject(url, Map.class);
+        if (response == null || !response.containsKey("price")) {
+            throw new RuntimeException("Erro ao obter o preço atual da Binance para o par: " + symbol);
+        }
         return response.get("price");
     }
 
