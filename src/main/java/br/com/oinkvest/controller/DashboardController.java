@@ -62,10 +62,11 @@ public class DashboardController {
             if ("COMPRA".equalsIgnoreCase(tipo)) {
                 walletService.realizarCompra(usuario, moeda, quantidade, preco);
                 operationService.registrarOperacao(usuario, moeda, quantidade, total, Operacao.TipoOperacao.COMPRA);
-                System.out.println("Compra realizada com sucesso!");
+                redirectAttributes.addFlashAttribute("success", "Compra realizada com sucesso!");
             } else if ("VENDA".equalsIgnoreCase(tipo)) {
                 walletService.realizarVenda(usuario, moeda, quantidade, preco);
                 operationService.registrarOperacao(usuario, moeda, quantidade, total, Operacao.TipoOperacao.VENDA);
+                redirectAttributes.addFlashAttribute("success", "Venda realizada com sucesso!");
             }
         } catch (RuntimeException ex) {
             System.out.println("Erro ao realizar operação: " + ex.getMessage());

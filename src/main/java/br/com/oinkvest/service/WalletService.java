@@ -32,7 +32,7 @@ public class WalletService {
     }
 
     public void realizarCompra(Usuario usuario, String moeda, double qtd, double preco) {
-        Carteira carteira = usuario.getCarteira();
+        Carteira carteira = carteiraRepository.findByUsuario(usuario).orElseThrow(() -> new RuntimeException("Carteira nao encontrada."));
         double total = qtd * preco;
 
         System.out.println("Quantidade: " + qtd);
@@ -50,7 +50,7 @@ public class WalletService {
     }
 
     public void realizarVenda(Usuario usuario, String moeda, double qtd, double preco) {
-        Carteira carteira = usuario.getCarteira();
+        Carteira carteira = carteiraRepository.findByUsuario(usuario).orElseThrow(() -> new RuntimeException("Carteira nao encontrada."));
         double total = qtd * preco;
 
         if (carteira.getSaldoTrade() < total)
