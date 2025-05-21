@@ -29,6 +29,7 @@ public class HistoryController {
     public String history(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
             @RequestParam(required = false) String filtro, Model model) {
         Usuario usuario = usuarioDetails.getUsuario();
+        
 
         List<Operacao> operacoes = operationService.listarPorUsuario(usuario);
 
@@ -38,7 +39,7 @@ public class HistoryController {
             operacoes = new ArrayList<>(operacoes.stream()
                     .filter(op -> op.getDataHora().format(DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm:ss"))
                             .toString().toLowerCase().contains(termo)
-                            || op.getDataHora().toString().toLowerCase().contains(termo)
+                            // || op.getDataHora().toString().toLowerCase().contains(termo)
                             || op.getTipo().name().toLowerCase().contains(termo)
                             || op.getMoeda().toLowerCase().contains(termo)
                             || String.valueOf(op.getQuantidade()).toLowerCase().contains(termo)

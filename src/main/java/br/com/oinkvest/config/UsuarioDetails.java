@@ -53,4 +53,5 @@ public class UsuarioDetails implements UserDetails {
     public Usuario getUsuario() {
         return this.usuario;
     }
+
 }

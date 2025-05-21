@@ -78,7 +78,9 @@
               name="moeda"
               th:value="${moedaSelecionada}"
               type="hidden"
-            /><input id="precoOperacao" name="preco" type="hidden" /><input
+            />
+            <input id="precoOperacao" name="preco" type="hidden" />
+            <input
               class="w-full mb-2 px-3 py-2 border rounded"
               id="precoAtualInput"
               readonly=""
@@ -117,18 +119,22 @@
           </form>
         </div>
         <div class="bg-white p-6 rounded shadow">
-          <h3 class="text-lg font-bold mb-4">Resumo da Carteira</h3>
+          <h3 class="text-lg font-bold mb-4">
+            Detalhes (<span th:text="${moedaSelecionada}"></span>)
+          </h3>
           <p class="text-sm">
-            Saldo Total:
-            <span class="float-right font-bold text-gray-800">$10,245.30</span>
+            Saldo (USDT):
+            <span
+              class="float-right font-bold text-gray-800"
+              th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.saldoMoeda, 1, 'COMMA', 2, 'POINT')}"
+            ></span>
           </p>
           <p class="text-sm">
-            Saldo USDT:
-            <span class="float-right font-bold text-gray-800">$5,120.50</span>
-          </p>
-          <p class="text-sm">
-            Valor em Ativos:
-            <span class="float-right font-bold text-gray-800">$5,124.80</span>
+            Preço Médio (<span th:text="${moedaSelecionada}"></span>):
+            <span
+              class="float-right font-bold text-gray-800"
+              th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.precoMedio, 1, 'COMMA', 2, 'POINT')}"
+            ></span>
           </p>
         </div>
       </div>

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import br.com.oinkvest.config.UsuarioDetails;
+import br.com.oinkvest.dto.DetalhesMoedaDTO;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.BinanceService;
@@ -33,14 +34,21 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(@RequestParam(required = false, defaultValue = "BTCUSDT") String symbol,
+    public String dashboard(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
+            @RequestParam(required = false, defaultValue = "BTCUSDT") String symbol,
             Model model) {
+
+        Usuario usuario = usuarioDetails.getUsuario(); // ← Faltava essa linha!
+
         List<String> paresUsdt = binanceService.listarParesUsdt();
         String preco = binanceService.obterPrecoAtual(symbol);
+
+        DetalhesMoedaDTO detalhesMoeda = walletService.calcularDetalhesMoeda(usuario, symbol);
 
         model.addAttribute("pares", paresUsdt);
         model.addAttribute("precoAtual", preco);
         model.addAttribute("moedaSelecionada", symbol);
+        model.addAttribute("detalhesMoeda", detalhesMoeda);
         model.addAttribute("content", "dashboard");
         model.addAttribute("title", "Dashboard - OinkVest");
 
