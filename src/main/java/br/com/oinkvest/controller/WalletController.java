@@ -20,6 +20,7 @@ import br.com.oinkvest.model.CarteiraMoeda;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.repository.CarteiraMoedaRepository;
+import br.com.oinkvest.repository.OperacaoRepository;
 import br.com.oinkvest.service.OperationService;
 import br.com.oinkvest.service.WalletService;
 
@@ -29,12 +30,14 @@ public class WalletController {
     private final WalletService walletService;
     private final OperationService operationService;
     private final CarteiraMoedaRepository carteiraMoedaRepository;
+    private final OperacaoRepository operacaoRepository;
 
     public WalletController(WalletService walletService, OperationService operationService,
-            CarteiraMoedaRepository carteiraMoedaRepository) {
+            CarteiraMoedaRepository carteiraMoedaRepository, OperacaoRepository operacaoRepository) {
         this.walletService = walletService;
         this.operationService = operationService;
         this.carteiraMoedaRepository = carteiraMoedaRepository;
+        this.operacaoRepository = operacaoRepository;
     }
 
     @GetMapping("/wallet")
@@ -44,6 +47,8 @@ public class WalletController {
 
         List<CarteiraMoeda> moedas = carteiraMoedaRepository.findAllByCarteira(carteira);
         List<AtivoDTO> ativos = new ArrayList<>();
+        List<Operacao> depositos = operacaoRepository.findByUsuarioAndTipo(usuario, Operacao.TipoOperacao.DEPOSITO);
+        List<Operacao> saques = operacaoRepository.findByUsuarioAndTipo(usuario, Operacao.TipoOperacao.SAQUE);
 
         BigDecimal saldoFiat = BigDecimal.ZERO;
         BigDecimal saldoTotal = BigDecimal.ZERO;
@@ -76,11 +81,21 @@ public class WalletController {
             }
         }
 
+        BigDecimal totalDepositado = depositos.stream()
+                .map(op -> BigDecimal.valueOf(op.getValor()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalSacado = saques.stream()
+                .map(op -> BigDecimal.valueOf(op.getValor()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         model.addAttribute("saldoFiat", saldoFiat);
         model.addAttribute("saldoTotal", saldoTotal);
         model.addAttribute("quantidadeAtivos", quantidadeAtivos);
         model.addAttribute("content", "wallet");
         model.addAttribute("ativos", ativos);
+        model.addAttribute("totalDepositado", totalDepositado);
+        model.addAttribute("totalSacado", totalSacado);
 
         return "fragments/layout";
     }

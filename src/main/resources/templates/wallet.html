@@ -37,6 +37,24 @@
       ></p>
     </div>
   </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+    <div class="rounded-xl border p-4 bg-white shadow-sm">
+      <p class="text-gray-600">Total Depositado</p>
+      <p class="text-sm text-gray-400">Soma de todos os depósitos</p>
+      <p
+        class="text-2xl font-bold text-green-600"
+        th:text="'$' + ${#numbers.formatDecimal(totalDepositado, 1, 'COMMA', 2, 'POINT')}"
+      ></p>
+    </div>
+    <div class="rounded-xl border p-4 bg-white shadow-sm">
+      <p class="text-gray-600">Total Sacado</p>
+      <p class="text-sm text-gray-400">Soma de todos os saques</p>
+      <p
+        class="text-2xl font-bold text-red-600"
+        th:text="'$' + ${#numbers.formatDecimal(totalSacado, 1, 'COMMA', 2, 'POINT')}"
+      ></p>
+    </div>
+  </div>
 
   <!-- Operações e ativos -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
