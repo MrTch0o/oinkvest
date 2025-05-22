@@ -1,5 +1,6 @@
 package br.com.oinkvest.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import br.com.oinkvest.config.UsuarioDetails;
 import br.com.oinkvest.dto.DetalhesMoedaDTO;
 import br.com.oinkvest.model.Carteira;
+import br.com.oinkvest.model.CarteiraMoeda;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.BinanceService;
 import br.com.oinkvest.service.OperationService;
 import br.com.oinkvest.service.WalletService;
+import br.com.oinkvest.repository.CarteiraMoedaRepository;
 
 @Controller
 public class DashboardController {
@@ -25,13 +28,16 @@ public class DashboardController {
     private final BinanceService binanceService;
     private final WalletService walletService;
     private final OperationService operationService;
+    private final CarteiraMoedaRepository carteiraMoedaRepository;
 
     public DashboardController(BinanceService binanceService,
             WalletService walletService,
-            OperationService operationService) {
+            OperationService operationService,
+            CarteiraMoedaRepository carteiraMoedaRepository) {
         this.binanceService = binanceService;
         this.walletService = walletService;
         this.operationService = operationService;
+        this.carteiraMoedaRepository = carteiraMoedaRepository;
     }
 
     @GetMapping("/dashboard")
@@ -39,22 +45,26 @@ public class DashboardController {
             @RequestParam(required = false, defaultValue = "BTCUSDT") String symbol,
             Model model) {
 
-        Usuario usuario = usuarioDetails.getUsuario(); // ← Faltava essa linha!
+        Usuario usuario = usuarioDetails.getUsuario();
 
         List<String> paresUsdt = binanceService.listarParesUsdt();
         String preco = binanceService.obterPrecoAtual(symbol);
 
         DetalhesMoedaDTO detalhesMoeda = walletService.calcularDetalhesMoeda(usuario, symbol);
+        Carteira carteira = walletService.buscarCarteiraPorUsuario(usuario);
+
+        // Busca o saldo de USDT
+        CarteiraMoeda usdt = carteiraMoedaRepository.findByCarteiraAndMoeda(carteira, "USDT")
+                .orElse(null);
+
+        BigDecimal saldoFiat = (usdt != null) ? usdt.getQuantidade() : BigDecimal.ZERO;
 
         model.addAttribute("pares", paresUsdt);
         model.addAttribute("precoAtual", preco);
         model.addAttribute("moedaSelecionada", symbol);
         model.addAttribute("detalhesMoeda", detalhesMoeda);
+        model.addAttribute("saldoFiat", saldoFiat);
         model.addAttribute("content", "dashboard");
-        model.addAttribute("title", "Dashboard - OinkVest");
-
-        Carteira carteira = walletService.buscarCarteiraPorUsuario(usuario);
-        model.addAttribute("saldoFiat", carteira.getSaldoFiat());
 
         return "fragments/layout";
     }

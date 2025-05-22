@@ -29,11 +29,11 @@
       ></p>
     </div>
     <div class="rounded-xl border p-4 bg-white shadow-sm">
-      <p class="text-gray-600">Valor em Ativos</p>
+      <p class="text-gray-600">Quantidade de Ativos</p>
       <p class="text-sm text-gray-400">Criptomoedas adquiridas</p>
       <p
         class="text-2xl font-bold text-gray-800"
-        th:text="${#numbers.formatDecimal(saldoTrade, 1, 'COMMA', 2, 'POINT')}"
+        th:text="${#numbers.formatDecimal(quantidadeAtivos, 1, 'COMMA', 2, 'POINT')}"
       ></p>
     </div>
   </div>
@@ -97,26 +97,21 @@
     <div class="rounded-xl border p-6 bg-white shadow-sm">
       <p class="text-lg font-semibold text-gray-800 mb-4">Seus Ativos</p>
       <ul class="space-y-2 text-sm text-gray-700">
-        <li class="flex justify-between">
+        <li th:each="ativo : ${ativos}" class="flex justify-between">
           <div>
-            <strong>Bitcoin (BTC)</strong><br />
-            0.05 BTC (Preço médio: $43000.18)
+            <strong th:text="${ativo.moeda}">MOEDA</strong><br />
+            <span th:text="${ativo.quantidade}">0</span>
+            <span
+              th:text="|Preço médio: $${#numbers.formatDecimal(ativo.precoMedio, 1, 'COMMA', 2, 'POINT')}|"
+              >Preço</span
+            >
           </div>
-          <div class="font-bold">$2162.54</div>
-        </li>
-        <li class="flex justify-between">
-          <div>
-            <strong>Ethereum (ETH)</strong><br />
-            0.95 ETH (Preço médio: $3120.42)
+          <div
+            class="font-bold"
+            th:text="|$${#numbers.formatDecimal(ativo.valorEstimado, 1, 'COMMA', 2, 'POINT')}|"
+          >
+            R$
           </div>
-          <div class="font-bold">$2964.40</div>
-        </li>
-        <li class="flex justify-between">
-          <div>
-            <strong>Binance Coin (BNB)</strong><br />
-            0 BNB
-          </div>
-          <div class="font-bold">$0.00</div>
         </li>
       </ul>
     </div>

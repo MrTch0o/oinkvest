@@ -3,8 +3,10 @@ package br.com.oinkvest.service;
 import br.com.oinkvest.dto.DetalhesMoedaDTO;
 
 import br.com.oinkvest.model.Carteira;
+import br.com.oinkvest.model.CarteiraMoeda;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
+import br.com.oinkvest.repository.CarteiraMoedaRepository;
 import br.com.oinkvest.repository.CarteiraRepository;
 import br.com.oinkvest.repository.OperacaoRepository;
 
@@ -25,17 +27,39 @@ public class WalletService {
     @Autowired
     private OperacaoRepository operacaoRepository;
 
-    public Carteira depositar(Carteira carteira, double valor) {
-        carteira.setSaldoFiat(carteira.getSaldoFiat() + valor);
-        return carteiraRepository.save(carteira);
+    @Autowired
+    private CarteiraMoedaRepository carteiraMoedaRepository;
+
+    public void depositar(Usuario usuario, double valor) {
+        Carteira carteira = buscarCarteiraPorUsuario(usuario);
+
+        CarteiraMoeda usdt = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, "USDT")
+                .orElseGet(() -> {
+                    CarteiraMoeda nova = new CarteiraMoeda();
+                    nova.setCarteira(carteira);
+                    nova.setMoeda("USDT");
+                    nova.setQuantidade(BigDecimal.ZERO);
+                    return nova;
+                });
+
+        usdt.setQuantidade(usdt.getQuantidade().add(BigDecimal.valueOf(valor)));
+        carteiraMoedaRepository.save(usdt);
     }
 
-    public Carteira sacar(Carteira carteira, double valor) {
-        if (carteira.getSaldoFiat() >= valor) {
-            carteira.setSaldoFiat(carteira.getSaldoFiat() - valor);
-            return carteiraRepository.save(carteira);
+    public void sacar(Usuario usuario, double valor) {
+        Carteira carteira = buscarCarteiraPorUsuario(usuario);
+
+        CarteiraMoeda usdt = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, "USDT")
+                .orElseThrow(() -> new RuntimeException("Saldo USDT não encontrado."));
+
+        if (usdt.getQuantidade().compareTo(BigDecimal.valueOf(valor)) < 0) {
+            throw new RuntimeException("Saldo USDT insuficiente para saque.");
         }
-        throw new RuntimeException("Saldo insuficiente para saque.");
+
+        usdt.setQuantidade(usdt.getQuantidade().subtract(BigDecimal.valueOf(valor)));
+        carteiraMoedaRepository.save(usdt);
     }
 
     public Optional<Carteira> buscarPorId(Long id) {
@@ -49,28 +73,71 @@ public class WalletService {
 
     public void realizarCompra(Usuario usuario, String moeda, double qtd, double preco) {
         Carteira carteira = carteiraRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Carteira nao encontrada."));
-        double total = qtd * preco;
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
 
-        if (carteira.getSaldoFiat() < total)
+        BigDecimal total = BigDecimal.valueOf(qtd * preco);
+
+        // Buscar ou criar moeda na carteira
+        CarteiraMoeda moedaCarteira = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, moeda)
+                .orElseGet(() -> {
+                    CarteiraMoeda nova = new CarteiraMoeda();
+                    nova.setCarteira(carteira);
+                    nova.setMoeda(moeda);
+                    nova.setQuantidade(BigDecimal.ZERO);
+                    return nova;
+                });
+
+        // Verifica se há saldo USDT suficiente (precisamos buscar o saldo USDT da
+        // carteira)
+        CarteiraMoeda usdt = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, "USDT")
+                .orElseThrow(() -> new RuntimeException("Saldo USDT não encontrado."));
+
+        if (usdt.getQuantidade().compareTo(total) < 0) {
             throw new RuntimeException("Saldo USDT insuficiente para compra.");
+        }
 
-        carteira.setSaldoFiat(carteira.getSaldoFiat() - total);
-        carteira.setSaldoTrade(carteira.getSaldoTrade() + total);
-        carteiraRepository.save(carteira);
+        // Atualizar saldo das moedas
+        usdt.setQuantidade(usdt.getQuantidade().subtract(total));
+        moedaCarteira.setQuantidade(moedaCarteira.getQuantidade().add(BigDecimal.valueOf(qtd)));
+
+        // Salvar alterações
+        carteiraMoedaRepository.save(usdt);
+        carteiraMoedaRepository.save(moedaCarteira);
     }
 
     public void realizarVenda(Usuario usuario, String moeda, double qtd, double preco) {
         Carteira carteira = carteiraRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Carteira nao encontrada."));
-        double total = qtd * preco;
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
 
-        if (carteira.getSaldoTrade() < total)
-            throw new RuntimeException("Ativos insuficientes para venda.");
+        BigDecimal total = BigDecimal.valueOf(qtd * preco);
 
-        carteira.setSaldoTrade(carteira.getSaldoTrade() - total);
-        carteira.setSaldoFiat(carteira.getSaldoFiat() + total);
-        carteiraRepository.save(carteira);
+        CarteiraMoeda moedaCarteira = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, moeda)
+                .orElseThrow(() -> new RuntimeException("Saldo da moeda não encontrado."));
+
+        if (moedaCarteira.getQuantidade().compareTo(BigDecimal.valueOf(qtd)) < 0) {
+            throw new RuntimeException("Quantidade insuficiente para venda.");
+        }
+
+        // Buscar ou criar USDT na carteira
+        CarteiraMoeda usdt = carteiraMoedaRepository
+                .findByCarteiraAndMoeda(carteira, "USDT")
+                .orElseGet(() -> {
+                    CarteiraMoeda nova = new CarteiraMoeda();
+                    nova.setCarteira(carteira);
+                    nova.setMoeda("USDT");
+                    nova.setQuantidade(BigDecimal.ZERO);
+                    return nova;
+                });
+
+        // Atualizar os saldos
+        moedaCarteira.setQuantidade(moedaCarteira.getQuantidade().subtract(BigDecimal.valueOf(qtd)));
+        usdt.setQuantidade(usdt.getQuantidade().add(total));
+
+        carteiraMoedaRepository.save(moedaCarteira);
+        carteiraMoedaRepository.save(usdt);
     }
 
     public DetalhesMoedaDTO calcularDetalhesMoeda(Usuario usuario, String moeda) {
