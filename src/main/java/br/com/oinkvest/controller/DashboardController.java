@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import br.com.oinkvest.config.UsuarioDetails;
 import br.com.oinkvest.dto.DetalhesMoedaDTO;
+import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.BinanceService;
@@ -51,6 +52,9 @@ public class DashboardController {
         model.addAttribute("detalhesMoeda", detalhesMoeda);
         model.addAttribute("content", "dashboard");
         model.addAttribute("title", "Dashboard - OinkVest");
+
+        Carteira carteira = walletService.buscarCarteiraPorUsuario(usuario);
+        model.addAttribute("saldoFiat", carteira.getSaldoFiat());
 
         return "fragments/layout";
     }

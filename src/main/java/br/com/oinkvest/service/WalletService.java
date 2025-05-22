@@ -4,7 +4,6 @@ import br.com.oinkvest.dto.DetalhesMoedaDTO;
 
 import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.Operacao;
-import br.com.oinkvest.model.Operacao.TipoOperacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.repository.CarteiraRepository;
 import br.com.oinkvest.repository.OperacaoRepository;
@@ -43,6 +42,11 @@ public class WalletService {
         return carteiraRepository.findById(id);
     }
 
+    public Carteira buscarCarteiraPorUsuario(Usuario usuario) {
+        return carteiraRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
+    }
+
     public void realizarCompra(Usuario usuario, String moeda, double qtd, double preco) {
         Carteira carteira = carteiraRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new RuntimeException("Carteira nao encontrada."));
@@ -79,7 +83,7 @@ public class WalletService {
         BigDecimal quantidadeComprada = BigDecimal.ZERO;
         BigDecimal quantidadeVendida = BigDecimal.ZERO;
 
-         BigDecimal saldoParcial = BigDecimal.ZERO;
+        BigDecimal saldoParcial = BigDecimal.ZERO;
 
         // 3. Acumular dados de compra e venda
         for (Operacao op : operacoes) {
