@@ -1,53 +1,86 @@
-<div th:fragment="content" class="p-6">
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="title">
+  <title>Suporte - OinkVest</title>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body>
+  <div th:fragment="content" class="p-6">
     <h2 class="text-2xl font-bold mb-2">Suporte</h2>
     <p class="text-sm text-gray-600 mb-6">Entre em contato com nossa equipe de suporte</p>
-  
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- FAQ -->
       <div class="col-span-1 md:col-span-1 bg-white p-4 rounded shadow border">
         <h3 class="font-semibold text-lg mb-3">FAQ</h3>
         <p class="text-sm text-gray-500 mb-4">Perguntas frequentes</p>
-  
+
         <div class="mb-4">
           <strong>Como faço para sacar meus fundos?</strong>
-          <p class="text-sm text-gray-700">Na seção "Carteira", selecione a opção "Saque" e siga as instruções para transferir seus fundos.</p>
+          <p class="text-sm text-gray-700">Na seção "Carteira", selecione a opção "Saque" e siga as instruções para
+            transferir seus fundos.</p>
         </div>
-  
+
         <div class="mb-4">
           <strong>Quais são as taxas da plataforma?</strong>
-          <p class="text-sm text-gray-700">Nossa taxa de trading é de 0,1% por operação. Não cobramos taxas para depósitos.</p>
+          <p class="text-sm text-gray-700">Nossa taxa de trading é de 0,1% por operação. Não cobramos taxas para
+            depósitos.</p>
         </div>
-  
+
         <div class="mb-4">
           <strong>Como verificar minha conta?</strong>
-          <p class="text-sm text-gray-700">Para verificar sua conta, acesse seu perfil e clique em "Verificar Conta". Você precisará fornecer documentos de identificação válidos.</p>
+          <p class="text-sm text-gray-700">Para verificar sua conta, acesse seu perfil e clique em "Verificar Conta".
+            Você
+            precisará fornecer documentos de identificação válidos.</p>
         </div>
-  
+
         <div>
           <strong>Quanto tempo leva para processar um depósito?</strong>
-          <p class="text-sm text-gray-700">Depósitos via USDT geralmente são processados em até 30 minutos, dependendo da rede utilizada.</p>
+          <p class="text-sm text-gray-700">Depósitos via USDT geralmente são processados em até 30 minutos, dependendo
+            da
+            rede utilizada.</p>
         </div>
       </div>
-  
-      <!-- Formulário de Contato -->
-      <div class="col-span-1 md:col-span-1 bg-white p-4 rounded shadow border">
+      <!--
+ <div class="col-span-1 md:col-span-1 bg-white p-4 rounded shadow border">
         <h3 class="font-semibold text-lg mb-3">Formulário de Contato</h3>
         <p class="text-sm text-gray-500 mb-4">Preencha o formulário abaixo para entrar em contato</p>
-  
+
         <form th:action="@{/support}" method="post" th:object="${contato}">
-          <input type="text" th:field="*{nome}" placeholder="Seu nome completo" class="w-full border p-2 rounded mb-3" />
+          <input type="text" th:field="*{nome}" placeholder="Seu nome completo"
+            class="w-full border p-2 rounded mb-3" />
           <input type="email" th:field="*{email}" placeholder="seu@email.com" class="w-full border p-2 rounded mb-3" />
-          <input type="text" th:field="*{assunto}" placeholder="Assunto da mensagem" class="w-full border p-2 rounded mb-3" />
-          <textarea th:field="*{mensagem}" placeholder="Digite sua mensagem aqui" class="w-full border p-2 rounded mb-3" rows="5"></textarea>
+          <input type="text" th:field="*{assunto}" placeholder="Assunto da mensagem"
+            class="w-full border p-2 rounded mb-3" />
+          <textarea th:field="*{mensagem}" placeholder="Digite sua mensagem aqui" class="w-full border p-2 rounded mb-3"
+            rows="5"></textarea>
           <button type="submit" class="w-full bg-black text-white p-2 rounded">Enviar Mensagem</button>
         </form>
       </div>
-  
+
+      
+      -->
+      <!-- Formulário de Contato -->
+      <form id="contact-form">
+        <input type="text" name="name" placeholder="Seu nome completo" class="w-full border p-2 rounded mb-3"
+          required />
+        <input type="email" name="email" placeholder="seu@email.com" class="w-full border p-2 rounded mb-3" required />
+        <input type="text" name="subject" placeholder="Assunto da mensagem" class="w-full border p-2 rounded mb-3"
+          required />
+        <textarea name="message" placeholder="Digite sua mensagem aqui" class="w-full border p-2 rounded mb-3" rows="5"
+          required></textarea>
+        <button type="submit" class="w-full bg-black text-white p-2 rounded">Enviar Mensagem</button>
+      </form>
+
+
       <!-- Informações de Contato -->
       <div class="col-span-1 md:col-span-1 bg-white p-4 rounded shadow border">
         <h3 class="font-semibold text-lg mb-3">Contato</h3>
         <p class="text-sm text-gray-500 mb-4">Outras formas de contato</p>
-  
+
         <div class="mb-3">
           <strong>Email</strong>
           <p class="text-sm text-gray-700">suporte@oinkvest.com</p>
@@ -63,4 +96,41 @@
       </div>
     </div>
   </div>
-  
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        console.log("tentando contato......")
+        const nameSender = this.name.value;
+        const email = this.email.value;
+        const subject = this.subject.value;
+        const message = this.message.value;
+
+        const serviceId = "service_9ogddug";
+        const templateId = "template_i2fgr3r";
+        const publicKey = "frqHTWoDUbcDyT2n6";
+
+        const templateParams = {
+          from_name: nameSender,
+          from_email: email,
+          to_name: "OinkVest",
+          subject: subject,
+          message: message,
+        };
+
+        // Enviar o e-mail usando o EmailJS
+        emailjs
+          .send(serviceId, templateId, templateParams, publicKey)
+          .then((response) => {
+            console.log("Email enviado com sucesso!", response);
+            alert("SUCESSO!")
+          })
+          .catch((error) => {
+            console.error("Erro ao enviar o email:", error);
+            alert("ERRO")
+          });
+      });
+
+  </script>
+</body>
+
+</html>
