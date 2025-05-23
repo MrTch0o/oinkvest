@@ -62,14 +62,40 @@
             class="space-y-4"
             method="post"
             th:action="@{/dashboard/operar}"
+            id="formOperacao"
           >
             <label class="block text-sm font-medium text-gray-700"
-              >Total Estimado</label
-            ><label class="block text-sm font-medium text-gray-700"
-              >Quantidade</label
-            ><label class="block text-sm font-medium text-gray-700"
               >Preço Atual</label
-            ><input
+            >
+            <input id="precoOperacao" name="preco" type="hidden" />
+            <input
+              class="w-full mb-2 px-3 py-2 border rounded"
+              id="precoAtualInput"
+              readonly=""
+              th:value="'$' + precoAtual"
+              type="text"
+            /><label class="block text-sm font-medium text-gray-700"
+              >Quantidade</label
+            >
+            <input
+              class="w-full mb-2 px-3 py-2 border rounded"
+              id="quantidadeInput"
+              name="quantidade"
+              step="0.0001"
+              type="number"
+              min="0.0001"
+              value="0.0001"
+            /><label class="block text-sm font-medium text-gray-700"
+              >Total Estimado</label
+            >
+            <input
+              class="w-full mb-4 px-3 py-2 border rounded"
+              id="totalEstimado"
+              readonly=""
+              type="text"
+              value="$0.00000000"
+            />
+            <input
               id="tipoOperacao"
               name="tipo"
               type="hidden"
@@ -79,38 +105,18 @@
               th:value="${moedaSelecionada}"
               type="hidden"
             />
-            <input id="precoOperacao" name="preco" type="hidden" />
-            <input
-              class="w-full mb-2 px-3 py-2 border rounded"
-              id="precoAtualInput"
-              readonly=""
-              th:value="'$' + precoAtual"
-              type="text"
-            /><input
-              class="w-full mb-2 px-3 py-2 border rounded"
-              id="quantidadeInput"
-              name="quantidade"
-              step="0.0001"
-              type="number"
-              min="0.0001"
-              value="0.0001"
-            /><input
-              class="w-full mb-4 px-3 py-2 border rounded"
-              id="totalEstimado"
-              readonly=""
-              type="text"
-              value="$0.00000000"
-            />
             <div class="flex gap-4">
               <button
+                id="botaoCompra"
                 class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
-                onclick="document.getElementById('tipoOperacao').value='COMPRA'"
+                data-tipo="COMPRA"
                 type="submit"
               >
                 Comprar</button
               ><button
+                id="botaoVenda"
                 class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
-                onclick="document.getElementById('tipoOperacao').value='VENDA'"
+                data-tipo="VENDA"
                 type="submit"
               >
                 Vender
@@ -182,7 +188,14 @@
       const quantidadeInput = document.getElementById("quantidadeInput");
       const totalEstimado = document.getElementById("totalEstimado");
 
+      const formOperacao = document.getElementById("formOperacao");
+      const botaoCompra = document.getElementById("botaoCompra");
+      const botaoVenda = document.getElementById("botaoVenda");
+
+      const tipoOperacaoInput = document.getElementById("tipoOperacao");
+
       let precoAtual = 0;
+      let operacaoSelecionada = "";
 
       function atualizarTotal() {
         const qtd = parseFloat(quantidadeInput.value).toFixed(4);
@@ -210,13 +223,51 @@
         if (precoHeader) precoHeader.textContent = ` ($${precoAtual})`;
 
         const precoOperacao = document.getElementById("precoOperacao");
-        if (precoOperacao) precoOperacao.value = precoAtual;
+        if (precoOperacao) precoOperacao.value = precoAtual.toString();
         atualizarTotal();
       };
 
       // opcional: exibir nome do par no título
       if (tituloOperacao) {
         tituloOperacao.textContent = `Operar ${parSelecionado}`;
+      }
+
+      formOperacao.addEventListener("submit", function (e) {
+        botaoCompra.disabled = true;
+        botaoVenda.disabled = true;
+
+        botaoCompra.textContent = "Processando...";
+        botaoVenda.textContent = "Processando...";
+      });
+
+      botaoCompra.addEventListener("click", function (e) {
+        e.preventDefault();
+        operacaoSelecionada = "COMPRA";
+        confirmarEEnviar();
+      });
+
+      botaoVenda.addEventListener("click", function (e) {
+        e.preventDefault();
+        operacaoSelecionada = "VENDA";
+        confirmarEEnviar();
+      });
+
+      function confirmarEEnviar() {
+        if (
+          confirm(
+            `Deseja realmente realizar a operação de ${operacaoSelecionada}?`
+          )
+        ) {
+          tipoOperacaoInput.value = operacaoSelecionada;
+
+          botaoCompra.disabled = true;
+          botaoVenda.disabled = true;
+
+          botaoCompra.textContent = "Processando...";
+          botaoVenda.textContent = "Processando...";
+
+          formOperacao.submit();
+        }
       }
     </script>
   </body>
