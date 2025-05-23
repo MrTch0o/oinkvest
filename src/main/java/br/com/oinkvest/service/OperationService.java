@@ -1,5 +1,6 @@
 package br.com.oinkvest.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class OperationService {
     @Autowired
     private OperacaoRepository operacaoRepository;
 
-    public Operacao registrarOperacao(Usuario usuario, String moeda, double quantidade, double valor,
+    public Operacao registrarOperacao(Usuario usuario, String moeda, BigDecimal quantidade, BigDecimal valor,
             TipoOperacao tipo) {
         Operacao operacao = Operacao.builder()
                 .usuario(usuario)

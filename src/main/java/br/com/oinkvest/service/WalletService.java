@@ -30,7 +30,7 @@ public class WalletService {
     @Autowired
     private CarteiraMoedaRepository carteiraMoedaRepository;
 
-    public void depositar(Usuario usuario, double valor) {
+    public void depositar(Usuario usuario, BigDecimal valor) {
         Carteira carteira = buscarCarteiraPorUsuario(usuario);
 
         CarteiraMoeda usdt = carteiraMoedaRepository
@@ -43,22 +43,22 @@ public class WalletService {
                     return nova;
                 });
 
-        usdt.setQuantidade(usdt.getQuantidade().add(BigDecimal.valueOf(valor)));
+        usdt.setQuantidade(usdt.getQuantidade().add(valor));
         carteiraMoedaRepository.save(usdt);
     }
 
-    public void sacar(Usuario usuario, double valor) {
+    public void sacar(Usuario usuario, BigDecimal valor) {
         Carteira carteira = buscarCarteiraPorUsuario(usuario);
 
         CarteiraMoeda usdt = carteiraMoedaRepository
                 .findByCarteiraAndMoeda(carteira, "USDT")
                 .orElseThrow(() -> new RuntimeException("Saldo USDT não encontrado."));
 
-        if (usdt.getQuantidade().compareTo(BigDecimal.valueOf(valor)) < 0) {
+        if (usdt.getQuantidade().compareTo(valor) < 0) {
             throw new RuntimeException("Saldo USDT insuficiente para saque.");
         }
 
-        usdt.setQuantidade(usdt.getQuantidade().subtract(BigDecimal.valueOf(valor)));
+        usdt.setQuantidade(usdt.getQuantidade().subtract(valor));
         carteiraMoedaRepository.save(usdt);
     }
 
@@ -71,11 +71,11 @@ public class WalletService {
                 .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
     }
 
-    public void realizarCompra(Usuario usuario, String moeda, double qtd, double preco) {
+    public void realizarCompra(Usuario usuario, String moeda, BigDecimal qtd, BigDecimal preco) {
         Carteira carteira = carteiraRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
 
-        BigDecimal total = BigDecimal.valueOf(qtd * preco);
+        BigDecimal total = qtd.multiply(preco).setScale(8, RoundingMode.HALF_UP);
 
         // Buscar ou criar moeda na carteira
         CarteiraMoeda moedaCarteira = carteiraMoedaRepository
@@ -100,24 +100,25 @@ public class WalletService {
 
         // Atualizar saldo das moedas
         usdt.setQuantidade(usdt.getQuantidade().subtract(total));
-        moedaCarteira.setQuantidade(moedaCarteira.getQuantidade().add(BigDecimal.valueOf(qtd)));
+        moedaCarteira.setQuantidade(
+                moedaCarteira.getQuantidade().add(qtd).setScale(8, RoundingMode.HALF_UP));
 
         // Salvar alterações
         carteiraMoedaRepository.save(usdt);
         carteiraMoedaRepository.save(moedaCarteira);
     }
 
-    public void realizarVenda(Usuario usuario, String moeda, double qtd, double preco) {
+    public void realizarVenda(Usuario usuario, String moeda, BigDecimal qtd, BigDecimal preco) {
         Carteira carteira = carteiraRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new RuntimeException("Carteira não encontrada."));
 
-        BigDecimal total = BigDecimal.valueOf(qtd * preco);
+        BigDecimal total = qtd.multiply(preco).setScale(8, RoundingMode.HALF_UP);
 
         CarteiraMoeda moedaCarteira = carteiraMoedaRepository
                 .findByCarteiraAndMoeda(carteira, moeda)
                 .orElseThrow(() -> new RuntimeException("Saldo da moeda não encontrado."));
 
-        if (moedaCarteira.getQuantidade().compareTo(BigDecimal.valueOf(qtd)) < 0) {
+        if (moedaCarteira.getQuantidade().compareTo(qtd) < 0) {
             throw new RuntimeException("Quantidade insuficiente para venda.");
         }
 
@@ -133,7 +134,7 @@ public class WalletService {
                 });
 
         // Atualizar os saldos
-        moedaCarteira.setQuantidade(moedaCarteira.getQuantidade().subtract(BigDecimal.valueOf(qtd)));
+        moedaCarteira.setQuantidade(moedaCarteira.getQuantidade().subtract(qtd).setScale(8, RoundingMode.HALF_UP));
         usdt.setQuantidade(usdt.getQuantidade().add(total));
 
         carteiraMoedaRepository.save(moedaCarteira);
@@ -154,8 +155,8 @@ public class WalletService {
 
         // 3. Acumular dados de compra e venda
         for (Operacao op : operacoes) {
-            BigDecimal valor = BigDecimal.valueOf(op.getValor());
-            BigDecimal qtd = BigDecimal.valueOf(op.getQuantidade());
+            BigDecimal valor = op.getValor();
+            BigDecimal qtd = op.getQuantidade();
 
             switch (op.getTipo()) {
                 case COMPRA:
@@ -188,7 +189,7 @@ public class WalletService {
         BigDecimal precoMedio;
         if (saldoMoeda.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal custoLiquido = totalComprado.subtract(totalVendido);
-            precoMedio = custoLiquido.divide(saldoMoeda, 2, RoundingMode.HALF_UP);
+            precoMedio = custoLiquido.divide(saldoMoeda, 8, RoundingMode.HALF_UP);
         } else {
             precoMedio = BigDecimal.ZERO;
         }

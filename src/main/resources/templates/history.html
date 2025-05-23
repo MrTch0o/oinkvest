@@ -41,38 +41,40 @@
           </button>
         </form>
       </div>
-
-      <table class="w-full text-left">
-        <thead>
-          <tr class="border-b">
-            <th class="py-2">Data</th>
-            <th class="py-2">Tipo</th>
-            <th class="py-2">Moeda</th>
-            <th class="py-2">Quantidade</th>
-            <th class="py-2">Preço</th>
-            <th class="py-2">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="op : ${operacoes}" class="border-b">
-            <td
-              class="py-2 font-semibold"
-              th:text="${#temporals.format(op.dataHora, 'dd/MM/yyyy, HH:mm:ss')}"
-            ></td>
-            <td class="py-2" th:text="${op.tipo}"></td>
-            <td class="py-2" th:text="${op.moeda}"></td>
-            <td class="py-2" th:text="${op.quantidade}"></td>
-            <td
-              class="py-2"
-              th:text="'$' + ${#numbers.formatDecimal(op.valor / op.quantidade, 1, 'COMMA', 2, 'POINT')}"
-            ></td>
-            <td
-              class="py-2 font-semibold"
-              th:text="'$' + ${#numbers.formatDecimal(op.valor, 1, 'COMMA', 2, 'POINT')}"
-            ></td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="w-full text-left">
+          <thead>
+            <tr class="border-b">
+              <th class="py-2">Data</th>
+              <th class="py-2">Tipo</th>
+              <th class="py-2">Moeda</th>
+              <th class="py-2">Quantidade</th>
+              <th class="py-2">Preço</th>
+              <th class="py-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="op : ${operacoes}" class="border-b">
+              <td
+                class="py-2 font-semibold"
+                th:text="${#temporals.format(op.dataHora, 'dd/MM/yyyy, HH:mm:ss')}"
+              ></td>
+              <td class="py-2" th:text="${op.tipo}"></td>
+              <td class="py-2" th:text="${op.moeda}"></td>
+              <td
+                class="py-2"
+                th:text="${#numbers.formatDecimal(op.quantidade, 1, 'COMMA', 4, 'POINT')}"
+              ></td>
+              <td
+                class="py-2"
+                th:text="'$' + ${#numbers.formatDecimal(op.valor / op.quantidade, 1, 'COMMA', 8, 'POINT')}"
+              ></td>
+              <td
+                class="py-2 font-semibold"
+                th:text="'$' + ${#numbers.formatDecimal(op.valor, 1, 'COMMA', 8, 'POINT')}"
+              ></td>
+            </tr>
+          </tbody>
+        </table>
     </div>
   </div>
 </div>

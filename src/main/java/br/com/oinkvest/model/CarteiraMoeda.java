@@ -12,6 +12,7 @@ public class CarteiraMoeda {
 
     private String moeda;
 
+    @Column(precision = 38, scale = 4)
     private BigDecimal quantidade;
 
     @ManyToOne

@@ -82,11 +82,11 @@ public class WalletController {
         }
 
         BigDecimal totalDepositado = depositos.stream()
-                .map(op -> BigDecimal.valueOf(op.getValor()))
+                .map(Operacao::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalSacado = saques.stream()
-                .map(op -> BigDecimal.valueOf(op.getValor()))
+                .map(Operacao::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         model.addAttribute("saldoFiat", saldoFiat);
@@ -103,7 +103,7 @@ public class WalletController {
     @PostMapping("/wallet/operar")
     public String operarCarteira(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
             @RequestParam String tipo,
-            @RequestParam double valor,
+            @RequestParam BigDecimal valor,
             RedirectAttributes redirectAttributes) {
 
         Usuario usuario = usuarioDetails.getUsuario();

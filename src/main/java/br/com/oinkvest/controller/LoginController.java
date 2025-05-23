@@ -3,6 +3,9 @@ package br.com.oinkvest.controller;
 import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.UsuarioService;
+
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -34,8 +37,8 @@ public class LoginController {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Carteira carteira = new Carteira();
-        carteira.setSaldoFiat(0.0);
-        carteira.setSaldoTrade(0.0);
+        carteira.setSaldoFiat(BigDecimal.ZERO);
+        carteira.setSaldoTrade(BigDecimal.ZERO);
         carteira.setUsuario(usuario);
         usuario.setCarteira(carteira);
         

@@ -3,6 +3,7 @@ package br.com.oinkvest.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,11 +29,11 @@ public class Operacao {
     @Column(nullable = false)
     private String moeda; // Ex: USDT, BTC, ETH...
 
-    @Column(nullable = false)
-    private Double quantidade;
+    @Column(nullable = false, precision = 38, scale = 4)
+    private BigDecimal quantidade;
 
-    @Column(nullable = false)
-    private Double valor; // valor total da operação
+    @Column(nullable = false, precision = 38, scale = 8)
+    private BigDecimal valor; // valor total da operação
 
     @Column(nullable = false)
     private LocalDateTime dataHora;

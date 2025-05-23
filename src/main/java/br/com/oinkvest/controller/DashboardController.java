@@ -1,15 +1,16 @@
 package br.com.oinkvest.controller;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import br.com.oinkvest.config.UsuarioDetails;
 import br.com.oinkvest.dto.DetalhesMoedaDTO;
@@ -17,10 +18,10 @@ import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.CarteiraMoeda;
 import br.com.oinkvest.model.Operacao;
 import br.com.oinkvest.model.Usuario;
+import br.com.oinkvest.repository.CarteiraMoedaRepository;
 import br.com.oinkvest.service.BinanceService;
 import br.com.oinkvest.service.OperationService;
 import br.com.oinkvest.service.WalletService;
-import br.com.oinkvest.repository.CarteiraMoedaRepository;
 
 @Controller
 public class DashboardController {
@@ -73,12 +74,12 @@ public class DashboardController {
     public String operar(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
             @RequestParam String tipo,
             @RequestParam String moeda,
-            @RequestParam double preco,
-            @RequestParam double quantidade,
+            @RequestParam BigDecimal preco,
+            @RequestParam BigDecimal quantidade,
             RedirectAttributes redirectAttributes) {
 
         Usuario usuario = usuarioDetails.getUsuario();
-        double total = preco * quantidade;
+        BigDecimal total = preco.multiply(quantidade).setScale(8, RoundingMode.HALF_UP);
 
         try {
             if ("COMPRA".equalsIgnoreCase(tipo)) {

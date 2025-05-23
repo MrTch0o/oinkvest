@@ -1,14 +1,16 @@
 package br.com.oinkvest.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import br.com.oinkvest.model.Notificacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.repository.NotificacaoRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class NotificationService {
@@ -16,7 +18,7 @@ public class NotificationService {
     @Autowired
     private NotificacaoRepository notificacaoRepository;
 
-    public Notificacao criarAlerta(Usuario usuario, String moeda, double precoAlvo, Notificacao.Condicao condicao) {
+    public Notificacao criarAlerta(Usuario usuario, String moeda, BigDecimal precoAlvo, Notificacao.Condicao condicao) {
         Notificacao notificacao = Notificacao.builder()
                 .usuario(usuario)
                 .moeda(moeda)

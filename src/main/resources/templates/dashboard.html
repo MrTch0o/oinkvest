@@ -90,16 +90,16 @@
               class="w-full mb-2 px-3 py-2 border rounded"
               id="quantidadeInput"
               name="quantidade"
-              step="any"
+              step="0.0001"
               type="number"
-              min="0"
-              value="0.00"
+              min="0.0001"
+              value="0.0001"
             /><input
               class="w-full mb-4 px-3 py-2 border rounded"
               id="totalEstimado"
               readonly=""
               type="text"
-              value="$0.00"
+              value="$0.00000000"
             />
             <div class="flex gap-4">
               <button
@@ -126,21 +126,21 @@
             Saldo (<span th:text="${moedaSelecionada}"></span>):
             <span
               class="float-right font-bold text-gray-800"
-              th:text="${#numbers.formatDecimal(detalhesMoeda.saldoMoeda, 1, 'COMMA', 2, 'POINT')}"
+              th:text="${#numbers.formatDecimal(detalhesMoeda.saldoMoeda, 1, 'COMMA', 4, 'POINT')}"
             ></span>
           </p>
           <p class="text-sm">
             Preço Médio (<span th:text="${moedaSelecionada}"></span>):
             <span
               class="float-right font-bold text-gray-800"
-              th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.precoMedio, 1, 'COMMA', 2, 'POINT')}"
+              th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.precoMedio, 1, 'COMMA', 8, 'POINT')}"
             ></span>
           </p>
           <p class="text-sm">
             Saldo disponível (USDT):
             <span
               class="float-right font-bold text-gray-800"
-              th:text="'$' + ${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 2, 'POINT')}"
+              th:text="'$' + ${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 8, 'POINT')}"
             ></span>
           </p>
         </div>
@@ -185,10 +185,10 @@
       let precoAtual = 0;
 
       function atualizarTotal() {
-        const qtd = parseFloat(quantidadeInput.value);
+        const qtd = parseFloat(quantidadeInput.value).toFixed(4);
         if (!isNaN(qtd) && !isNaN(precoAtual)) {
           const total = qtd * precoAtual;
-          totalEstimado.value = `$${total.toFixed(2)}`;
+          totalEstimado.value = `$${total.toFixed(8)}`;
         } else {
           totalEstimado.value = "$0.00";
         }
@@ -204,7 +204,7 @@
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        precoAtual = parseFloat(data.c).toFixed(2);
+        precoAtual = parseFloat(data.c).toFixed(8);
 
         if (precoInput) precoInput.value = `$${precoAtual}`;
         if (precoHeader) precoHeader.textContent = ` ($${precoAtual})`;

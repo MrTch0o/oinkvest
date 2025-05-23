@@ -3,6 +3,7 @@ package br.com.oinkvest.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,8 +26,8 @@ public class Notificacao {
     @Column(nullable = false)
     private String moeda;
 
-    @Column(nullable = false)
-    private Double precoAlvo;
+    @Column(nullable = false, precision = 38, scale = 8)
+    private BigDecimal precoAlvo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
