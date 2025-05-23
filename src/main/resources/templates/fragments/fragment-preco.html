@@ -1,0 +1,26 @@
+<!-- fragments/fragment-preco.html -->
+
+<div
+  th:fragment="preco-header"
+  id="precoAtualHeader"
+  th:text="' ($' + ${precoAtual} + ')'">
+  ($0.00)
+</div>
+
+<!-- Fragmento do <input> para o campo de operação -->
+<input
+  th:fragment="preco-input"
+  id="precoAtualInput"
+  class="w-full mb-2 px-3 py-2 border rounded"
+  readonly
+  th:value="'$' + ${precoAtual}"
+  type="text"
+/>
+
+<!-- Fragmento do <input hidden> -->
+<input
+  th:fragment="preco-hidden"
+  id="precoOperacao"
+  name="preco"
+  type="hidden"
+  th:value="${precoAtual}" />

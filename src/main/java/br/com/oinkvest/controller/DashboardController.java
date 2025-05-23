@@ -48,8 +48,8 @@ public class DashboardController {
 
         Usuario usuario = usuarioDetails.getUsuario();
 
-        List<String> paresUsdt = binanceService.listarParesUsdt();
-        String preco = binanceService.obterPrecoAtual(symbol);
+        // List<String> paresUsdt = binanceService.listarParesUsdt();
+        // String preco = binanceService.obterPrecoAtual(symbol);
 
         DetalhesMoedaDTO detalhesMoeda = walletService.calcularDetalhesMoeda(usuario, symbol);
         Carteira carteira = walletService.buscarCarteiraPorUsuario(usuario);
@@ -60,14 +60,34 @@ public class DashboardController {
 
         BigDecimal saldoFiat = (usdt != null) ? usdt.getQuantidade() : BigDecimal.ZERO;
 
-        model.addAttribute("pares", paresUsdt);
-        model.addAttribute("precoAtual", preco);
+        // model.addAttribute("pares", paresUsdt);
+        // model.addAttribute("precoAtual", preco);
         model.addAttribute("moedaSelecionada", symbol);
         model.addAttribute("detalhesMoeda", detalhesMoeda);
         model.addAttribute("saldoFiat", saldoFiat);
         model.addAttribute("content", "dashboard");
 
         return "fragments/layout";
+    }
+
+    @GetMapping("/dashboard/fragment-pares")
+    public String fragmentPares(@RequestParam String symbol, Model model) {
+        List<String> pares = binanceService.listarParesUsdt(); // ou o método que você usa
+        model.addAttribute("pares", pares);
+        model.addAttribute("moedaSelecionada", symbol);
+        return "fragments/fragment-pares :: select-pares";
+    }
+
+    @GetMapping("/dashboard/fragment-preco")
+    public String fragmentPreco(
+            @RequestParam String symbol,
+            @RequestParam String fragment, // 'preco-header', 'preco-input' ou 'preco-hidden'
+            Model model) {
+
+        String preco = binanceService.obterPrecoAtual(symbol);
+        model.addAttribute("precoAtual", preco);
+
+        return String.format("fragments/fragment-preco :: %s", fragment);
     }
 
     @PostMapping("/dashboard/operar")

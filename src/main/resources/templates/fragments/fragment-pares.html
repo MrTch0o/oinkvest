@@ -1,0 +1,15 @@
+<!-- fragments/fragment-pares.html -->
+<select
+  class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800"
+  id="pair"
+  name="symbol"
+  onchange="this.form.submit()"
+  th:fragment="select-pares"
+>
+  <option
+    th:each="par : ${pares}"
+    th:selected="${par == moedaSelecionada}"
+    th:text="${par}"
+    th:value="${par}"
+  ></option>
+</select>

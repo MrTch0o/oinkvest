@@ -29,23 +29,29 @@
           method="get"
           th:action="@{/dashboard}"
         >
-          <select
-            class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800"
+          <div
             id="pair"
-            name="symbol"
-            onchange="this.form.submit()"
+            th:attr="hx-get=@{/dashboard/fragment-pares(symbol=${moedaSelecionada})}"
+            hx-trigger="load"
+            hx-target="#pair"
+            hx-swap="outerHTML"
           >
-            <option
-              th:each="par : ${pares}"
-              th:selected="${par == moedaSelecionada}"
-              th:text="${par}"
-              th:value="${par}"
-            ></option>
-          </select>
-          <div class="text-lg font-medium text-gray-800">
-            <span id="precoAtualHeader" th:text="' ($' + precoAtual + ')'"
-              >($0.00)</span
+            <select
+              disabled
+              class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800"
             >
+              <option>Carregando...</option>
+            </select>
+          </div>
+          <div
+            class="text-lg font-medium text-gray-800"
+            id="precoAtualHeader"
+            th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-header')}"
+            hx-trigger="load"
+            hx-target="#precoAtualHeader"
+            hx-swap="outerHTML"
+          >
+            <span class="animate-pulse text-gray-500">Carregando preço...</span>
           </div>
         </form>
         <!-- Gráfico -->
@@ -67,14 +73,25 @@
             <label class="block text-sm font-medium text-gray-700"
               >Preço Atual</label
             >
-            <input id="precoOperacao" name="preco" type="hidden" />
-            <input
-              class="w-full mb-2 px-3 py-2 border rounded"
+            <div
+              id="precoOperacao"
+              th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-hidden')}"
+              hx-trigger="load"
+              hx-target="#precoOperacao"
+              hx-swap="outerHTML"
+            >
+              <input type="hidden" value="..." />
+            </div>
+            <div
               id="precoAtualInput"
-              readonly=""
-              th:value="'$' + precoAtual"
-              type="text"
-            /><label class="block text-sm font-medium text-gray-700"
+              th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-input')}"
+              hx-trigger="load"
+              hx-target="#precoAtualInput"
+              hx-swap="outerHTML"
+            >
+              <input readonly value="Carregando..." type="text" />
+            </div>
+            <label class="block text-sm font-medium text-gray-700"
               >Quantidade</label
             >
             <input
@@ -219,8 +236,12 @@
         const data = JSON.parse(event.data);
         precoAtual = parseFloat(data.c).toFixed(8);
 
+        //tem que fazer isso aqui novamente, pois quando carrega a pagina o htmx substitui o div e o precoHeader nao pode mais ser encontrado, deve ser buscado novamente.
+        const precoHeader = document.getElementById("precoAtualHeader");
+        const precoInput = document.getElementById("precoAtualInput");
+
         if (precoInput) precoInput.value = `$${precoAtual}`;
-        if (precoHeader) precoHeader.textContent = ` ($${precoAtual})`;
+        if (precoHeader) precoHeader.innerHTML = ` ($${precoAtual})`;
 
         const precoOperacao = document.getElementById("precoOperacao");
         if (precoOperacao) precoOperacao.value = precoAtual.toString();
