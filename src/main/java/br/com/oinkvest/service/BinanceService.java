@@ -25,6 +25,7 @@ public class BinanceService {
                         Boolean.TRUE.equals(symbol.get("isSpotTradingAllowed")))
                 .filter(symbol -> ((String) symbol.get("symbol")).endsWith("USDT"))
                 .map(symbol -> (String) symbol.get("symbol"))
+                .sorted()
                 .collect(Collectors.toList());
     }
 @SuppressWarnings("unchecked")
