@@ -1,57 +1,27 @@
-<div id="grafico-wrapper"
-     hx-get="/grafico-fragment"
-     hx-trigger="load"
-     hx-target="#grafico-wrapper"
-     hx-swap="outerHTML">
-    <canvas id="chart" class="w-full h-64"></canvas>
+<div id="grafico-wrapper" class="p-4 bg-white rounded shadow">
+  <canvas id="graficoCanvas" class="w-full"></canvas>
 
-    <script>
-        const ctx = document.getElementById('chart').getContext('2d');
-
-        let chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Preço de Fechamento',
-                    data: [],
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1,
-                    fill: false
-                }]
-            },
-            options: {
-                animation: false,
-                responsive: true,
-                scales: {
-                    x: { ticks: { maxTicksLimit: 10 } },
-                    y: { beginAtZero: false }
-                }
-            }
-        });
-
-        async function atualizarGrafico() {
-            try {
-                const response = await fetch('/grafico-json');
-                const dados = await response.json();
-
-                const labels = dados.map(c => {
-                    const d = new Date(c.time);
-                    return d.toLocaleTimeString(); // Ex: "14:01:30"
-                });
-
-                const closes = dados.map(c => parseFloat(c.close));
-
-                chart.data.labels = labels;
-                chart.data.datasets[0].data = closes;
-                chart.update();
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-            }
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('graficoCanvas').getContext('2d');
+    window.chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Preço',
+          data: [],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { title: { display: true, text: 'Horário' }},
+          y: { title: { display: true, text: 'Preço (USDT)' }}
         }
-
-        // Primeira renderização + atualizações a cada 5s
-        atualizarGrafico();
-        setInterval(atualizarGrafico, 5000);
-    </script>
+      }
+    });
+  </script>
 </div>

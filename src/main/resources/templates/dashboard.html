@@ -54,6 +54,15 @@
             <span class="animate-pulse text-gray-500">Carregando preço...</span>
           </div>
         </form>
+        <div class="w-fit h-fit">
+        <select name="intervalo" id="intervalo" class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800 mb-4">
+          <option value="1s">1s</option>
+          <option value="1m" selected>1m</option>
+          <option value="15m">15m</option>
+          <option value="1h">1h</option>
+
+        </select>
+      </div>
         <!-- Gráfico -->
         <div id="grafico-wrapper" 
         hx-get="/grafico-fragment" 
@@ -61,8 +70,6 @@
         hx-target="#grafico-wrapper" h
         x-swap="outerHTML">
           <!-- Enquanto carrega, exibe um spinner ou mensagem -->
-          <div class="text-gray-500 text-sm">Carregando gráfico...</div>
-        </div>
         </div>
       <!-- Operações -->
       <div class="space-y-6">
@@ -177,61 +184,42 @@
       </div>
     </div>
     <!-- Gráfico estático por enquanto -->
-    <script>
-      const symbol = "BTCUSDT";
-        const interval = "1s";
-        const limit = 50;
+     <!-- Dentro do corpo da página principal -->
 
-        let chart; // Referência global ao gráfico
+<!-- Script global que será usado após o fragmento -->
+<script>
+  const intervalo = document.getElementById('intervalo')
+  async function fetchAndRender() {
+    try {
+      const res = await fetch(`/grafico-json?symbol=${parSelecionado}&interval=${intervalo.value}`);
+      const candles = await res.json();
 
-        async function fetchAndRender() {
-            try {
-                const response = await fetch(`/grafico?symbol=${symbol}&interval=${interval}&limit=${limit}`);
-                const candles = await response.json();
+      if (!Array.isArray(candles)) throw new Error("Formato inválido");
 
-                const labels = candles.map(c => new Date(c.openTime).toLocaleTimeString());
-                const closes = candles.map(c => parseFloat(c.close));
+      const labels = candles.map(c => new Date(c.time).toLocaleTimeString());
+      const dados = candles.map(c => c.close);
 
-                if (!chart) {
-                    const ctx = document.getElementById('priceChart').getContext('2d');
-                    chart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Preço de Fechamento',
-                                data: closes,
-                                borderColor: 'rgb(75, 192, 192)',
-                                tension: 0.1,
-                                fill: false
-                            }]
-                        },
-                        options: {
-                            animation: false,
-                            responsive: true,
-                            scales: {
-                                x: {
-                                    ticks: { maxTicksLimit: 10 }
-                                },
-                                y: {
-                                    beginAtZero: false
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = closes;
-                    chart.update();
-                }
-            } catch (error) {
-                console.error("Erro ao atualizar gráfico:", error);
-            }
-        }
+      if (window.chart && window.chart.data) {
+        window.chart.data.labels = labels;
+        window.chart.data.datasets[0].data = dados;
+        window.chart.update();
+      } else {
+        console.error("Gráfico não inicializado.");
+      }
+    } catch (err) {
+      console.error("Erro ao buscar dados:", err);
+    }
+  }
 
-        fetchAndRender(); // Inicial
-        setInterval(fetchAndRender, 1000); // Atualiza a cada 5 segundos
-    </script>
+  document.body.addEventListener('htmx:afterSettle', function (evt) {
+    if (evt.target.id === 'grafico-wrapper') {
+      console.log("Fragmento carregado, buscando dados...");
+      fetchAndRender();
+      setInterval(fetchAndRender,1000)
+    }
+  });
+</script>
+
     <!-- WebSocket + cálculo total -->
     <script th:inline="javascript">
       const parSelecionado = /*[[${moedaSelecionada}]]*/ "BTCUSDT";

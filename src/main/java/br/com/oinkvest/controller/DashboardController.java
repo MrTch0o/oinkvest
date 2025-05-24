@@ -126,24 +126,24 @@ public class DashboardController {
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/grafico")
-    public String mostrarPaginaGrafico(Model model) {
-        List<Candle> candles = binanceService.ultimosPrecos("BTCUSDT", "1m", 50);
-        model.addAttribute("candles", candles);
-        return "grafico";
+    @GetMapping("/grafico-fragment")
+    public String carregarFragmentoGrafico(Model model) {
+        return "fragments/fragment-grafico"; // Thymeleaf procura por fragments/grafico.html
     }
 
     @GetMapping("/grafico-json")
     @ResponseBody
-    public List<Map<String, Object>> obterDadosGraficoJson() {
-        List<Candle> candles = binanceService.ultimosPrecos("BTCUSDT", "1m", 50);
+    public List<Map<String, Object>> obterDadosGraficoJson(@RequestParam String symbol, @RequestParam(defaultValue = "1m")String interval) {
+        List<Candle> candles = binanceService.ultimosPrecos(symbol, interval, 50);
 
-        return candles.stream().map(c -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("time", c.getOpenTime()); // Date ou long (timestamp)
-            map.put("close", c.getClose());
-            return map;
-        }).collect(Collectors.toList());
+        return candles.stream()
+                .map(c -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("time", c.getOpenTime()); // long
+                    map.put("close", c.getClose()); // BigDecimal
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
 }
