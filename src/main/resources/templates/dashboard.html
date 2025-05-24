@@ -55,8 +55,15 @@
           </div>
         </form>
         <!-- Gráfico -->
-        <canvas height="120" id="priceChart"></canvas>
-      </div>
+        <div id="grafico-wrapper" 
+        hx-get="/grafico-fragment" 
+        hx-trigger="load" 
+        hx-target="#grafico-wrapper" h
+        x-swap="outerHTML">
+          <!-- Enquanto carrega, exibe um spinner ou mensagem -->
+          <div class="text-gray-500 text-sm">Carregando gráfico...</div>
+        </div>
+        </div>
       <!-- Operações -->
       <div class="space-y-6">
         <div class="bg-white p-6 rounded shadow">
@@ -171,28 +178,59 @@
     </div>
     <!-- Gráfico estático por enquanto -->
     <script>
-      const ctx = document.getElementById("priceChart").getContext("2d");
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: ["4/28", "4/29", "4/30", "5/01", "5/02", "5/03", "5/04"],
-          datasets: [
-            {
-              label: "Bitcoin",
-              data: [42200, 42800, 43300, 43059.08, 43100, 42800, 42500],
-              borderColor: "green",
-              tension: 0.4,
-              fill: false,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: { y: { beginAtZero: false } },
-        },
-      });
+      const symbol = "BTCUSDT";
+        const interval = "1s";
+        const limit = 50;
+
+        let chart; // Referência global ao gráfico
+
+        async function fetchAndRender() {
+            try {
+                const response = await fetch(`/grafico?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+                const candles = await response.json();
+
+                const labels = candles.map(c => new Date(c.openTime).toLocaleTimeString());
+                const closes = candles.map(c => parseFloat(c.close));
+
+                if (!chart) {
+                    const ctx = document.getElementById('priceChart').getContext('2d');
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Preço de Fechamento',
+                                data: closes,
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            animation: false,
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    ticks: { maxTicksLimit: 10 }
+                                },
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    chart.data.labels = labels;
+                    chart.data.datasets[0].data = closes;
+                    chart.update();
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar gráfico:", error);
+            }
+        }
+
+        fetchAndRender(); // Inicial
+        setInterval(fetchAndRender, 1000); // Atualiza a cada 5 segundos
     </script>
     <!-- WebSocket + cálculo total -->
     <script th:inline="javascript">

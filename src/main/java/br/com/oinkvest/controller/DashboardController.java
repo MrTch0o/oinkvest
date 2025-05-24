@@ -2,7 +2,10 @@ package br.com.oinkvest.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -10,9 +13,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.oinkvest.config.UsuarioDetails;
+import br.com.oinkvest.dto.Candle;
 import br.com.oinkvest.dto.DetalhesMoedaDTO;
 import br.com.oinkvest.model.Carteira;
 import br.com.oinkvest.model.CarteiraMoeda;
@@ -120,4 +125,25 @@ public class DashboardController {
 
         return "redirect:/dashboard";
     }
+
+    @GetMapping("/grafico")
+    public String mostrarPaginaGrafico(Model model) {
+        List<Candle> candles = binanceService.ultimosPrecos("BTCUSDT", "1m", 50);
+        model.addAttribute("candles", candles);
+        return "grafico";
+    }
+
+    @GetMapping("/grafico-json")
+    @ResponseBody
+    public List<Map<String, Object>> obterDadosGraficoJson() {
+        List<Candle> candles = binanceService.ultimosPrecos("BTCUSDT", "1m", 50);
+
+        return candles.stream().map(c -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("time", c.getOpenTime()); // Date ou long (timestamp)
+            map.put("close", c.getClose());
+            return map;
+        }).collect(Collectors.toList());
+    }
+
 }
