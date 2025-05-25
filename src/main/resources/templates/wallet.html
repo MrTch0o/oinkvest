@@ -87,7 +87,7 @@
 
         <!-- Campo de valor -->
         <label
-          class="block text-sm font-medium text-gray-600 mb-1"
+          class="block text-sm font-medium text-green-600 mb-1"
           id="labelValor"
           >Valor a depositar (USDT)</label
         >
@@ -105,7 +105,7 @@
         <button
           type="submit"
           id="botaoAcao"
-          class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800"
+          class="w-full text-green-600 text-white py-2 rounded-lg font-semibold hover:bg-gray-800"
         >
           Depositar USDT
         </button>
@@ -145,15 +145,27 @@
     const tipoOperacao = document.getElementById("tipoOperacao");
 
     btnDeposito.addEventListener("click", () => {
+      btnDeposito.style.border = "2px solid green";
+      btnDeposito.style.color = "green";
+      btnSaque.style.border = "none";
+      btnSaque.style.color = "gray";
       tipoOperacao.value = "DEPOSITO";
-      botaoAcao.textContent = "Depositar USDT";
       labelValor.textContent = "Valor a depositar (USDT)";
+      labelValor.style.color = "green";
+      botaoAcao.textContent = "Depositar USDT";
+      botaoAcao.style.backgroundColor = "green";
     });
-
+    
     btnSaque.addEventListener("click", () => {
+      btnSaque.style.border = "2px solid red";
+      btnSaque.style.color = "red";
+      btnDeposito.style.border = "none";
+      btnDeposito.style.color = "gray";
       tipoOperacao.value = "SAQUE";
-      botaoAcao.textContent = "Sacar USDT";
       labelValor.textContent = "Valor a sacar (USDT)";
+      labelValor.style.color = "red"
+      botaoAcao.textContent = "Sacar USDT";
+      botaoAcao.style.backgroundColor = "red";
     });
   </script>
 </div>
