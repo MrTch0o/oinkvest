@@ -67,6 +67,7 @@ public class WalletController {
 
         for (CarteiraMoeda cm : moedas) {
             if (!"USDT".equals(cm.getMoeda())) {
+                if(cm.getQuantidade().compareTo(BigDecimal.ZERO) == 0) continue;
                 DetalhesMoedaDTO detalhes = walletService.calcularDetalhesMoeda(usuario, cm.getMoeda());
 
                 AtivoDTO dto = new AtivoDTO();
@@ -101,7 +102,7 @@ public class WalletController {
         }
         model.addAttribute("totalDepositado", totalDepositado);
         model.addAttribute("totalSacado", totalSacado);
-
+    
         return "fragments/layout";
     }
 
