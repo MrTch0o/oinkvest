@@ -93,7 +93,12 @@ public class WalletController {
         model.addAttribute("saldoTotal", saldoTotal);
         model.addAttribute("quantidadeAtivos", quantidadeAtivos);
         model.addAttribute("content", "wallet");
-        model.addAttribute("ativos", ativos);
+        
+        if (quantidadeAtivos.compareTo(BigDecimal.ZERO) > 0) {
+            model.addAttribute("ativos", ativos);
+        } else {
+            model.addAttribute("msg", "Não há valores ativos no momento");
+        }
         model.addAttribute("totalDepositado", totalDepositado);
         model.addAttribute("totalSacado", totalSacado);
 

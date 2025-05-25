@@ -68,26 +68,26 @@ function exportarPDF() {
         return splitText.length * lineHeight;
     }
 
-    function drawRow(row, x, y, fill) {
+    function drawRow(row, x, y, idx) {
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(10);
         pdf.setTextColor(0, 0, 0);
 
         let totalWidth = colWidths.reduce((a, b) => a + b, 0);
 
-        // Primeiro: fundo da linha inteira
-        if (fill) {
-            pdf.setFillColor(230, 240, 255); // azul claro
+        if (idx % 2 === 0) {
+            pdf.setFillColor(230, 240, 255); 
             pdf.rect(x, y, totalWidth, row.height + 8, 'F');
         }
-
-        // Agora desenha o texto e a borda
+        if (idx === 0) {
+            pdf.setFillColor(59, 130, 246);
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(12);
+            pdf.rect(x, y, totalWidth, row.height + 8, 'F');
+        }
         let currentX = x;
         row.data.forEach((cell, i) => {
-            // Desenha texto
             drawText(cell, currentX, y + 4, colWidths[i], lineHeight);
-
-            // Borda da célula (sem preenchimento)
             pdf.rect(currentX, y, colWidths[i], row.height + 8);
             currentX += colWidths[i];
         });
@@ -118,7 +118,7 @@ function exportarPDF() {
             y += headerHeight + 4;
         }
 
-        drawRow({ data: rowData, height: maxHeight }, marginLeft, y, idx % 2 == 0);
+        drawRow({ data: rowData, height: maxHeight }, marginLeft, y, idx);
         y += maxHeight + 8;
     });
 
