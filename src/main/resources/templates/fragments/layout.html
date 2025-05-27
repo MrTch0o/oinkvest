@@ -1,34 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title th:text="${title}">OinkVest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-  </head>
-  <body class="bg-gray-100">
-    <header class="bg-white shadow p-4 flex justify-between items-center">
-      <div class="flex items-center gap-8">
-        <h1 class="text-xl font-bold text-indigo-600">OinkVest</h1>
-        <nav class="space-x-4">
-          <a th:href="@{/dashboard}" class="hover:underline">Dashboard</a>
-          <a th:href="@{/wallet}" class="hover:underline">Carteira</a>
-          <a th:href="@{/history}" class="hover:underline">Histórico</a>
-          <a th:href="@{/notifications}" class="hover:underline">Alertas</a>
-          <a th:href="@{/support}" class="hover:underline">Suporte</a>
-        </nav>
-      </div>
-      <form th:action="@{/logout}" method="post">
-        <button class="text-sm bg-white border px-4 py-1 rounded">Sair</button>
-        <input
-          type="hidden"
-          th:name="${_csrf.parameterName}"
-          th:value="${_csrf.token}"
-        />
-      </form>
-    </header>
 
-    <main th:replace="~{${content} :: content}">Conteúdo</main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="${title}">OinkVest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+   
+   
+  <!--JS PDF LIB-->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+  <!--JS PDF AUTO TABLE-->
+  <script  type="text/javascript" src="./js/jspdf.plugin.autotable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+  <script src="
+    https://cdn.jsdelivr.net/npm/sheetjs@2.0.0/index.min.js
+    "></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+  </script>
+  <script type="text/javascript">
+    (function () {
+      emailjs.init({
+        publicKey: "frqHTWoDUbcDyT2n6",
+      });
+      console.log("🟢🟢 email js inicializado com sucesso!")
+    })();
+  </script>
+
+</head>
+
+<body class="bg-gray-100">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center gap-8">
+      <h1 class="text-xl font-bold text-indigo-600">OinkVest</h1>
+      <nav class="space-x-4">
+        <a th:href="@{/dashboard}" class="hover:underline">Dashboard</a>
+        <a th:href="@{/wallet}" class="hover:underline">Carteira</a>
+        <a th:href="@{/history}" class="hover:underline">Histórico</a>
+        <a th:href="@{/notifications}" class="hover:underline">Alertas</a>
+        <a th:href="@{/support}" class="hover:underline">Suporte</a>
+      </nav>
+    </div>
+    <form th:action="@{/logout}" method="post">
+      <button class="text-sm bg-white border px-4 py-1 rounded">Sair</button>
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    </form>
+  </header>
+
+  <main th:replace="~{${content} :: content}">Conteúdo</main>
+  <script type="text/javascript" src="/js/code.js"></script>
+</body>
+
 </html>

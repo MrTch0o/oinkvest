@@ -1,47 +1,48 @@
-<div th:fragment="content">
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-2">Histórico de Operações</h1>
-    <p class="text-gray-500 mb-6">
-      Visualize todas as suas transações e operações
-    </p>
+<!DOCTYPE html>
 
-    <div class="bg-white shadow rounded p-4">
-      <h2 class="text-lg font-semibold mb-1">Todas as Transações</h2>
-      <p class="text-sm text-gray-400 mb-4">
-        Histórico completo de depósitos, saques, compras e vendas
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="title">
+  <title>Suporte - OinkVest</title>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body>
+  <div th:fragment="content">
+    <div class="p-6">
+      <h1 class="text-2xl font-bold mb-2">Histórico de Operações</h1>
+      <p class="text-gray-500 mb-6">
+        Visualize todas as suas transações e operações
       </p>
 
-      <div class="flex mb-4 w-full">
-        <form method="get" th:action="@{/history}" class="flex mb-4 w-full">
-          <input
-            type="text"
-            name="filtro"
-            th:value="${filtro}"
-            placeholder="Buscar por algum campo que contenha..."
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            class="flex items-center justify-center px-4 border border-l-0 border-gray-300 bg-blue-500 hover:bg-blue-600 text-white rounded-r-md"
-          >
-            <svg
-              class="h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z"
-              />
-            </svg>
+      <div class="bg-white shadow rounded p-4 relative">
+        <div class="teste absolute top-3 right-0 flex gap-1">
+          <button onclick="exportarPDF()" class="bg-transparent text-white px-4 py-2 rounded">
+            <img src="/images/pdf.png" width="30px">
           </button>
-        </form>
-      </div>
-        <table class="w-full text-left">
+
+        </div>
+
+        <h2 class="text-lg font-semibold mb-1">Todas as Transações</h2>
+        <p class="text-sm text-gray-400 mb-4">
+          Histórico completo de depósitos, saques, compras e vendas
+        </p>
+
+        <div class="flex mb-4 w-full">
+          <form method="get" th:action="@{/history}" class="flex mb-4 w-full">
+            <input type="text" name="filtro" th:value="${filtro}" placeholder="Buscar por algum campo que contenha..."
+              class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <button type="submit"
+              class="flex items-center justify-center px-4 border border-l-0 border-gray-300 bg-blue-500 hover:bg-blue-600 text-white rounded-r-md">
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z" />
+              </svg>
+            </button>
+          </form>
+        </div>
+        <table class="w-full text-left" id="tabelaHistorico">
           <thead>
             <tr class="border-b">
               <th class="py-2">Data</th>
@@ -54,27 +55,21 @@
           </thead>
           <tbody>
             <tr th:each="op : ${operacoes}" class="border-b">
-              <td
-                class="py-2 font-semibold"
-                th:text="${#temporals.format(op.dataHora, 'dd/MM/yyyy, HH:mm:ss')}"
-              ></td>
+              <td class="py-2 font-semibold" th:text="${#temporals.format(op.dataHora, 'dd/MM/yyyy, HH:mm:ss')}"></td>
               <td class="py-2" th:text="${op.tipo}"></td>
               <td class="py-2" th:text="${op.moeda}"></td>
-              <td
-                class="py-2"
-                th:text="${#numbers.formatDecimal(op.quantidade, 1, 'COMMA', 4, 'POINT')}"
-              ></td>
-              <td
-                class="py-2"
-                th:text="'$' + ${#numbers.formatDecimal(op.valor / op.quantidade, 1, 'COMMA', 8, 'POINT')}"
-              ></td>
-              <td
-                class="py-2 font-semibold"
-                th:text="'$' + ${#numbers.formatDecimal(op.valor, 1, 'COMMA', 8, 'POINT')}"
-              ></td>
+              <td class="py-2" th:text="${#numbers.formatDecimal(op.quantidade, 1, 'COMMA', 4, 'POINT')}"></td>
+              <td class="py-2"
+                th:text="'$' + ${#numbers.formatDecimal(op.valor / op.quantidade, 1, 'COMMA', 8, 'POINT')}"></td>
+              <td class="py-2 font-semibold"
+                th:text="'$' + ${#numbers.formatDecimal(op.valor, 1, 'COMMA', 8, 'POINT')}">
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
     </div>
   </div>
-</div>
+</body>
+
+</html>

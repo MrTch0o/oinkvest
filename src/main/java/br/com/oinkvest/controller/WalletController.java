@@ -67,6 +67,7 @@ public class WalletController {
 
         for (CarteiraMoeda cm : moedas) {
             if (!"USDT".equals(cm.getMoeda())) {
+                if(cm.getQuantidade().compareTo(BigDecimal.ZERO) == 0) continue;
                 DetalhesMoedaDTO detalhes = walletService.calcularDetalhesMoeda(usuario, cm.getMoeda());
 
                 AtivoDTO dto = new AtivoDTO();
@@ -93,10 +94,15 @@ public class WalletController {
         model.addAttribute("saldoTotal", saldoTotal);
         model.addAttribute("quantidadeAtivos", quantidadeAtivos);
         model.addAttribute("content", "wallet");
-        model.addAttribute("ativos", ativos);
+        
+        if (quantidadeAtivos.compareTo(BigDecimal.ZERO) > 0) {
+            model.addAttribute("ativos", ativos);
+        } else {
+            model.addAttribute("msg", "Não há valores ativos no momento");
+        }
         model.addAttribute("totalDepositado", totalDepositado);
         model.addAttribute("totalSacado", totalSacado);
-
+    
         return "fragments/layout";
     }
 
