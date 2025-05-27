@@ -14,16 +14,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import br.com.oinkvest.config.UsuarioDetails;
 import br.com.oinkvest.model.Notificacao;
 import br.com.oinkvest.model.Usuario;
+import br.com.oinkvest.service.BinanceService;
 import br.com.oinkvest.service.NotificationService;
 
 @Controller
 @RequestMapping("/notifications")
 public class NotificationController {
 
+    private final BinanceService binanceService;
+
     private final NotificationService service;
 
-    public NotificationController(NotificationService service) {
+    public NotificationController(NotificationService service, BinanceService binanceService) {
         this.service = service;
+        this.binanceService = binanceService;
     }
 
     @GetMapping
@@ -36,11 +40,18 @@ public class NotificationController {
         return "fragments/layout";
     }
 
+    @GetMapping("/fragment-pares")
+    public String fragmentPares(@RequestParam String symbol, Model model) {
+        model.addAttribute("moedaSelecionada", symbol);
+        model.addAttribute("pares", binanceService.listarParesUsdt());
+        return "fragments/fragment-pares :: select-pares-notificacoes";
+    }
+
     @PostMapping
     public String criarAlerta(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
-                              @RequestParam String moeda,
-                              @RequestParam BigDecimal precoAlvo,
-                              @RequestParam Notificacao.Condicao condicao) {
+            @RequestParam String moeda,
+            @RequestParam BigDecimal precoAlvo,
+            @RequestParam Notificacao.Condicao condicao) {
 
         Usuario usuario = usuarioDetails.getUsuario();
         service.criarAlerta(usuario, moeda, precoAlvo, condicao);

@@ -1,10 +1,28 @@
 <!-- fragments/fragment-pares.html -->
+
+<!-- Fragmento para Dashboard (já existente) -->
+<!-- fragments/fragment-pares.html -->
 <select
   class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800"
   id="pair"
   name="symbol"
   onchange="this.form.submit()"
   th:fragment="select-pares"
+>
+  <option
+    th:each="par : ${pares}"
+    th:selected="${par == moedaSelecionada}"
+    th:text="${par}"
+    th:value="${par}"
+  ></option>
+</select>
+
+<!-- ✅ Novo fragmento para Notifications -->
+<select
+  class="w-full p-2 border rounded mb-3"
+  id="select-moeda"
+  name="moeda"
+  th:fragment="select-pares-notificacoes"
 >
   <option
     th:each="par : ${pares}"
