@@ -54,9 +54,23 @@
             <span class="animate-pulse text-gray-500">Carregando preço...</span>
           </div>
         </form>
-        <!-- Gráfico -->
-        <canvas height="120" id="priceChart"></canvas>
+        <div class="w-fit h-fit">
+        <select name="intervalo" id="intervalo" class="w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800 mb-4">
+          <option value="1s">1s</option>
+          <option value="1m" selected>1m</option>
+          <option value="15m">15m</option>
+          <option value="1h">1h</option>
+
+        </select>
       </div>
+        <!-- Gráfico -->
+        <div id="grafico-wrapper" 
+        hx-get="/grafico-fragment" 
+        hx-trigger="load" 
+        hx-target="#grafico-wrapper" h
+        x-swap="outerHTML">
+          <!-- Enquanto carrega, exibe um spinner ou mensagem -->
+        </div>
       <!-- Operações -->
       <div class="space-y-6">
         <div class="bg-white p-6 rounded shadow">
@@ -170,30 +184,42 @@
       </div>
     </div>
     <!-- Gráfico estático por enquanto -->
-    <script>
-      const ctx = document.getElementById("priceChart").getContext("2d");
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: ["4/28", "4/29", "4/30", "5/01", "5/02", "5/03", "5/04"],
-          datasets: [
-            {
-              label: "Bitcoin",
-              data: [42200, 42800, 43300, 43059.08, 43100, 42800, 42500],
-              borderColor: "green",
-              tension: 0.4,
-              fill: false,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: { y: { beginAtZero: false } },
-        },
-      });
-    </script>
+     <!-- Dentro do corpo da página principal -->
+
+<!-- Script global que será usado após o fragmento -->
+<script>
+  const intervalo = document.getElementById('intervalo')
+  async function fetchAndRender() {
+    try {
+      const res = await fetch(`/grafico-json?symbol=${parSelecionado}&interval=${intervalo.value}`);
+      const candles = await res.json();
+
+      if (!Array.isArray(candles)) throw new Error("Formato inválido");
+
+      const labels = candles.map(c => new Date(c.time).toLocaleTimeString());
+      const dados = candles.map(c => c.close);
+
+      if (window.chart && window.chart.data) {
+        window.chart.data.labels = labels;
+        window.chart.data.datasets[0].data = dados;
+        window.chart.update();
+      } else {
+        console.error("Gráfico não inicializado.");
+      }
+    } catch (err) {
+      console.error("Erro ao buscar dados:", err);
+    }
+  }
+
+  document.body.addEventListener('htmx:afterSettle', function (evt) {
+    if (evt.target.id === 'grafico-wrapper') {
+      console.log("Fragmento carregado, buscando dados...");
+      fetchAndRender();
+      setInterval(fetchAndRender,1000)
+    }
+  });
+</script>
+
     <!-- WebSocket + cálculo total -->
     <script th:inline="javascript">
       const parSelecionado = /*[[${moedaSelecionada}]]*/ "BTCUSDT";
