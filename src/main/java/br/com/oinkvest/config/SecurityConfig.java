@@ -20,11 +20,9 @@ public class SecurityConfig {
 
     // Autenticação baseada no banco de dados
     @Bean
-    @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService,
                                                              PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider(userDetailsService);
         auth.setPasswordEncoder(passwordEncoder);
         return auth;
     }
