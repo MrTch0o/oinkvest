@@ -1,20 +1,20 @@
 <div th:fragment="content" class="p-4">
-  <h2 class="text-2xl font-bold mb-2">Alertas de Preço</h2>
+  <h2 class="text-2xl text-white font-bold mb-2">Alertas de Preço</h2>
   <p class="text-gray-600 mb-4">
     Configure alertas para ser notificado quando os preços atingirem
     determinados valores
   </p>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Formulário -->
     <form
       th:action="@{/notifications}"
       method="post"
-      class="border p-4 rounded shadow"
+      class="bg-white/5 p-4 md:p-6 rounded-2xl shadow border border-violet-500/30 overflow-hidden relative"
     >
-      <h3 class="text-lg font-semibold mb-2">Criar Novo Alerta</h3>
+      <h3 class="text-lg text-white  font-semibold mb-2">Criar Novo Alerta</h3>
 
-      <label class="block mb-1">Criptomoeda</label>
+      <label class="block text-gray-300 mb-1">Criptomoeda</label>
       <div
         id="select-moeda"
         th:attr="hx-get=@{/notifications/fragment-pares(symbol=${moedaSelecionada})}"
@@ -27,7 +27,7 @@
         </select>
       </div>
 
-      <label class="block mb-1">Condição</label>
+      <label class="block text-gray-300 mb-1">Condição</label>
       <select
         id="condicaoSelect"
         name="condicao"
@@ -37,56 +37,49 @@
         <option value="ABAIXO">Abaixo do valor</option>
       </select>
 
-      <label class="block mb-1">Preço Alvo</label>
+      <label class="block text-gray-300 mb-1">Preço Alvo</label>
       <input
         id="precoAlvoInput"
         type="number"
         min="0.00000001"
         step="0.00000001"
         name="precoAlvo"
-        class="w-full p-2 border rounded mb-3"
+        class="w-full bg-white/90 p-2 border rounded mb-3"
       />
-      <button type="submit" class="bg-black text-white p-2 w-full rounded">
+      <button type="submit" class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r 
+      from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity">
         Criar Alerta
-      </button>
+      </button>      
     </form>
 
     <!-- Lista de Alertas -->
-    <div class="border p-4 rounded shadow">
-      <h3 class="text-lg font-semibold mb-2">Seus Alertas Ativos</h3>
-      <div
-        th:each="alerta, iterStat : ${alertas}"
-        class="flex justify-between items-center py-2 border-b"
-      >
+ <div class="bg-white/5 p-6 rounded-2xl shadow border border-violet-500/30">
+      <h3 class="text-lg font-semibold mb-2 text-white">Seus Alertas Ativos</h3>
+      
+      <div th:each="alerta, iterStat : ${alertas}"
+        class="flex justify-between items-center py-3 border-b border-white/10">
         <div>
-          <strong th:text="${alerta.simboloMoeda}">BTC</strong>
-          <span
-            th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"
-          ></span>
-          <span
-            th:text="'$' + ${#numbers.formatDecimal(alerta.precoAlvo, 1, 'COMMA', 2, 'POINT')}"
-          ></span>
+          <strong class="text-white" th:text="${alerta.moeda}">BTC</strong>
+          <span class="text-gray-300" th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"></span>
+          <span class="text-gray-300"
+            th:text="'$' + ${#numbers.formatDecimal(alerta.precoAlvo, 1, 'COMMA', 2, 'POINT')}"></span>
         </div>
-        <form
-          th:action="@{'/notifications/remover/' + ${iterStat.index}}"
-          method="post"
-        >
-          <button type="submit" class="text-gray-500 hover:text-red-600">
+        <form th:action="@{'/notifications/remover/' + ${alerta.id}}" method="post">
+           <button type="submit" class="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors">
             🗑
           </button>
         </form>
       </div>
-    </div>
   </div>
   <script>
     const input = document.getElementById("precoAlvoInput");
 
     input.addEventListener("blur", () => {
-      const valor = input.value.trim().replace(",", "."); // aceita vírgula como decimal
+      const valor = input.value.trim().replace(",", "."); 
       const numero = Number(valor);
 
       if (!isNaN(numero)) {
-        input.value = numero.toFixed(8); // ✅ força visual completo no input
+        input.value = numero.toFixed(8); 
       } else {
         input.value = "";
       }
