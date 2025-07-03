@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class DetalhesMoedaDTO {
     private BigDecimal saldoMoeda;
     private BigDecimal precoMedio;
+    private String iconUrl;
 
     public BigDecimal getSaldoMoeda() {
         return saldoMoeda;
@@ -20,5 +21,13 @@ public class DetalhesMoedaDTO {
 
     public void setPrecoMedio(BigDecimal precoMedio) {
         this.precoMedio = precoMedio;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

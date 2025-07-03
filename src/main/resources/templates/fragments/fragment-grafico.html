@@ -1,4 +1,4 @@
-<div id="grafico-wrapper" class="p-4 bg-white rounded shadow">
+<div id="grafico-wrapper" class="bg-transparent rounded">
   <canvas id="graficoCanvas" class="w-full"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,17 +11,33 @@
         datasets: [{
           label: 'Preço',
           data: [],
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
+          borderColor: '#FF2CDF',
+          backgroundColor: 'rgba(255, 44, 223, 0.1)',
+          fill: true,
+          tension: 0.3,
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
         scales: {
-          x: { title: { display: true, text: 'Horário' }},
-          y: { title: { display: true, text: 'Preço (USDT)' }}
+          x: {
+            title: { display: true, text: 'Horário', color: '#9CA3AF' },
+            ticks: { color: '#9CA3AF', font: { size: 10 } },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          },
+          y: {
+            title: { display: true, text: 'Preço (USDT)', color: '#9CA3AF' },
+            ticks: { color: '#9CA3AF', font: { size: 10 } },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          }
         }
-      }
+      },
     });
   </script>
 </div>

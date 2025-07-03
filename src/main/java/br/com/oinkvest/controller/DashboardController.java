@@ -59,6 +59,12 @@ public class DashboardController {
         DetalhesMoedaDTO detalhesMoeda = walletService.calcularDetalhesMoeda(usuario, symbol);
         Carteira carteira = walletService.buscarCarteiraPorUsuario(usuario);
 
+        String baseAsset = binanceService.obterNomeCompleto(symbol);
+        String iconUrl = String.format("https://cdn.jsdelivr.net/gh/vadimmalykhin/binance-icons/crypto/%s.svg",
+        baseAsset.toLowerCase());
+
+        detalhesMoeda.setIconUrl(iconUrl);
+
         // Busca o saldo de USDT
         CarteiraMoeda usdt = carteiraMoedaRepository.findByCarteiraAndMoeda(carteira, "USDT")
                 .orElse(null);

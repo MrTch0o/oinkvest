@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 
 @Controller
 public class LoginController {
@@ -21,8 +23,22 @@ public class LoginController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @GetMapping("/")
+    public String rootRedirect(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/dashboard";
+        } else {
+            return "redirect:/login";
+        }
+    }
+    
+
     @GetMapping("/login")
-    public String login() {
+    public String login(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            // O usuário já está autenticado
+            return "redirect:/dashboard"; // ou qualquer página padrão pós-login
+        }
         return "login";
     }
 
@@ -41,7 +57,7 @@ public class LoginController {
         carteira.setSaldoTrade(BigDecimal.ZERO);
         carteira.setUsuario(usuario);
         usuario.setCarteira(carteira);
-        
+
         usuarioService.salvar(usuario);
         return "redirect:/login?registered";
     }
