@@ -30,9 +30,11 @@
             title: { display: true, text: 'Horário', color: '#9CA3AF' },
             ticks: { color: '#9CA3AF', font: { size: 10 } },
             grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            
           },
           y: {
-            title: { display: true, text: 'Preço (USDT)', color: '#9CA3AF' },
+            position: 'right',
+            // title: { display: true, text: 'Preço (USDT)', color: '#9CA3AF' },
             ticks: { color: '#9CA3AF', font: { size: 10 } },
             grid: { color: 'rgba(255, 255, 255, 0.1)' }
           }
@@ -41,3 +43,15 @@
     });
   </script>
 </div>
+
+<style>
+  #grafico-wrapper {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  
+  #graficoCanvas {
+    width: 100% !important;
+    height: 60vh !important;
+  }

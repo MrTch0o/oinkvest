@@ -10,13 +10,13 @@
 <body>
   <div th:fragment="content" class="p-6">
     <h2 class="text-2xl text-white font-bold mb-2">Suporte</h2>
-    <p class="text-sm text-gray-600 mb-6">Entre em contato com nossa equipe de suporte</p>
+    <p class="text-sm text-gray-200 mb-6">Entre em contato com nossa equipe de suporte</p>
 
     <div class="grid sm:grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- FAQ -->
-      <div class="col-span-1 md:col-span-1 lg:bg-white/5 p-4 md:p-6 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
+      <div class="col-span-1 md:col-span-1 lg:bg-white/5 lg:p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
         <h3 class="font-semibold text-lg mb-3 text-white">FAQ</h3>
-        <p class="text-sm text-gray-500 mb-4">Perguntas frequentes</p>
+        <p class="text-sm text-gray-200 mb-4">Perguntas frequentes</p>
 
         <div class="mb-4">
           <h2 class="text-sm font-bold text-gray-100">Como faço para sacar meus fundos?</h2>
@@ -45,17 +45,17 @@
         </div>
       </div>
       <!-- Formulário de Contato -->
-      <div class="col-span-1 md:col-span-1 lg:bg-white/5 p-4 md:p-6 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
+      <div class="col-span-1 md:col-span-1 lg:bg-white/5 lg:p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
         <h3 class="font-semibold text-lg mb-3 text-white">Formulário de Contato</h3>
-        <p class="text-sm text-gray-500 mb-4">Preencha o formulário abaixo para entrar em contato</p>
+        <p class="text-sm text-gray-200 mb-4">Preencha o formulário abaixo para entrar em contato</p>
         <form id="contact-form">
-          <input type="text" name="name" placeholder="Seu nome completo" class="bg-white/90 w-full border p-2 rounded mb-3"
+          <input type="text" name="name" placeholder="Seu nome completo" class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded"
             required />
-          <input type="email" name="email" placeholder="seu@email.com" class="bg-white/90 w-full border p-2 rounded mb-3"
+          <input type="email" name="email" placeholder="seu@email.com" class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded"
             required />
-          <input type="text" name="subject" placeholder="Assunto da mensagem" class="bg-white/90 w-full border p-2 rounded mb-3"
+          <input type="text" name="subject" placeholder="Assunto da mensagem" class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded"
             required />
-          <textarea name="message" placeholder="Digite sua mensagem aqui" class="bg-white/90 w-full border p-2 rounded mb-3"
+          <textarea name="message" placeholder="Digite sua mensagem aqui" class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded"
             rows="5" required></textarea>
           <button type="submit" class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r 
           from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity">Enviar Mensagem</button>
@@ -64,9 +64,9 @@
 
 
       <!-- Informações de Contato -->
-      <div class="col-span-1 md:col-span-1 lg:bg-white/5 p-4 md:p-6 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
+      <div class="col-span-1 md:col-span-1 lg:bg-white/5 lg:p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden relative">
         <h3 class="font-semibold text-lg mb-3 text-white">Contato</h3>
-        <p class="text-sm text-gray-500 mb-4">Outras formas de contato</p>
+        <p class="text-sm text-gray-200 mb-4">Outras formas de contato</p>
 
         <div class="mb-3">
           <h2 class="text-sm font-bold text-gray-100">Email</h2><br />
@@ -84,7 +84,7 @@
         </div>
         <div>
           <h2 class="text-sm font-bold text-gray-100">Horário de Atendimento</h2>
-          <p class="text-md text-gray-700">Segunda a Sexta, das 9h às 18h</p>
+          <p class="text-md text-gray-200">Segunda a Sexta, das 9h às 18h</p>
         </div>
       </div>
     </div>
