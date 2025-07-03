@@ -21,8 +21,8 @@
     <div class="lg:col-span-2 space-y-6  ">
 
       <!-- Seletor de moeda e gráfico -->
-      <div class="lg:bg-white/5 p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-        <div class="flex flex-col lg:flex-row gap-4 mb-4">
+      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
+        <div class="flex flex-col-2 gap-4 mb-4">
           <!-- Par e preço -->
           <form class="flex flex-col items-start w-full lg:w-auto" method="get" th:action="@{/dashboard}">
             <label for="pair_select" class="block text-sm font-medium text-gray-400 mb-1">Moeda</label>
@@ -35,9 +35,9 @@
           </form>
 
 
-          <div class="w-full lg:w-auto">
+          <!-- <div class="w-full lg:w-auto">
             <label for="precoAtualHeader" class="block text-sm font-medium text-gray-400 mb-1">Preço Atual</label>
-            <div class="border border-gray-300  text-gray-800 rounded px-3 py-1 bg-white/90 text-lg font-medium text-gray-800">
+            <div class="w-auto border border-0 rounded px-0 py-2 text-lg font-medium text-white bg-transparent">
               <div id="precoAtualHeader"
                 th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-header')}"
                 hx-trigger="load" hx-target="#precoAtualHeader" hx-swap="outerHTML">
@@ -45,12 +45,12 @@
                  >
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="w-full lg:w-auto">
             <label for="intervalo" class="block text-sm font-medium text-gray-400 mb-1">Intervalo</label>
             <select name="intervalo" id="intervalo"
-              class="w-full lg:w-40 bg-white/90 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800 mb-4">
+              class="w-full lg:w-auto border border-0 rounded px-0 py-2 text-lg font-medium text-white bg-transparent">
               <option value="1s">1s</option>
               <option value="1m" selected>1m</option>
               <option value="15m">15m</option>
@@ -61,7 +61,7 @@
         </div>
         <!-- Gráfico -->
 
-        <div id="grafico-wrapper" class="relative w-full" hx-get="/grafico-fragment" hx-trigger="load"
+        <div id="grafico-wrapper" class="relative w-full h-80 md:aspect-video" hx-get="/grafico-fragment" hx-trigger="load"
           hx-target="#grafico-wrapper" x-swap="outerHTML">
           <!-- Enquanto carrega, exibe um spinner ou mensagem -->
         </div>
@@ -71,9 +71,11 @@
 
     <!-- Operações -->
     <div class="lg:col-span-1 space-y-6">
-      <div class="lg:bg-white/5 p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-        <h3 class="text-white  text-lg font-bold mb-4" id="tituloOperacao">
-          Operar BTCUSDT
+      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
+                <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
+          <img th:if="${detalhesMoeda.iconUrl}" th:src="${detalhesMoeda.iconUrl}" th:alt="${moedaSelecionada}"
+            class="w-8 h-8" onerror="this.onerror=null; this.src='/images/coin.png';" />
+          Detalhes (<span th:text="${moedaSelecionada}"></span>)
         </h3>
 
         <form class="space-y-4" method="post" th:action="@{/dashboard/operar}" id="formOperacao">
@@ -95,13 +97,13 @@
           <div class="flex items-start gap-4">
             <div class="flex-1">
               <label class="block text-sm font-medium text-gray-400 mb-1">Quantidade</label>
-              <input class="bg-white/90 w-full mb-2 px-3 py-2 border rounded" id="quantidadeInput" name="quantidade" step="0.0001"
+              <input class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded" id="quantidadeInput" name="quantidade" step="0.0001"
                 type="number" min="0.0001" value="0.0001" />
             </div>
             <div class="flex-1">
               <label class="block text-sm font-medium text-gray-400 mb-1">Total
                 Estimado</label>
-              <input class="bg-white/90 w-full mb-4 px-3 py-2 border rounded" id="totalEstimado" readonly="" type="text"
+              <input class="bg-white/10 text-gray-200 w-full mb-4 px-3 py-2 rounded" id="totalEstimado" readonly="" type="text"
                 value="$0.00000000" />
               <input id="tipoOperacao" name="tipo" type="hidden" value="COMPRA" /><input name="moeda"
                 th:value="${moedaSelecionada}" type="hidden" />
@@ -118,12 +120,12 @@
           </div>
         </form>
       </div>
-      <div class="lg:bg-white/5 p-4 rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-        <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
+      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
+        <!-- <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
           <img th:if="${detalhesMoeda.iconUrl}" th:src="${detalhesMoeda.iconUrl}" th:alt="${moedaSelecionada}"
             class="w-8 h-8" onerror="this.onerror=null; this.src='/images/coin.png';" />
           Detalhes (<span th:text="${moedaSelecionada}"></span>)
-        </h3>
+        </h3> -->
         <p class="text-sm text-white">
           Saldo (<span th:text="${moedaSelecionada}"></span>):
           <span class="float-right font-bold text-gray-200"
