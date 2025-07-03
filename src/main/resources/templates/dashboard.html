@@ -1,41 +1,61 @@
 <!DOCTYPE html>
 
 <html xmlns:th="http://www.thymeleaf.org">
+  <head th:fragment="title">
+    <title>Dashboard - OinkVest</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+  </head>
 
-<head th:fragment="title">
-  <title>Dashboard - OinkVest</title>
-  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-</head>
+  <body th:fragment="content">
+    <div
+      th:if="${success}"
+      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"
+    >
+      <span th:text="${success}"></span>
+    </div>
 
-<body th:fragment="content">
-  <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-    <span th:text="${success}"></span>
-  </div>
+    <div
+      th:if="${error}"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+    >
+      <span th:text="${error}"></span>
+    </div>
 
-  <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    <span th:text="${error}"></span>
-  </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Seletor de moeda e gráfico -->
+        <div
+          class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden"
+        >
+          <div class="flex flex-col-2 gap-4 mb-4">
+            <!-- Par e preço -->
+            <form
+              class="flex flex-col items-start w-full lg:w-auto"
+              method="get"
+              th:action="@{/dashboard}"
+            >
+              <label
+                for="pair_select"
+                class="block text-sm font-medium text-gray-400 mb-1"
+                >Moeda</label
+              >
+              <div
+                id="pair"
+                th:attr="hx-get=@{/dashboard/fragment-pares(symbol=${moedaSelecionada})}"
+                hx-trigger="load"
+                hx-target="#pair"
+                hx-swap="outerHTML"
+              >
+                <select
+                  disabled
+                  class="w-full lg:w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800 bg-white"
+                >
+                  <option>Carregando...</option>
+                </select>
+              </div>
+            </form>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
-
-    <div class="lg:col-span-2 space-y-6  ">
-
-      <!-- Seletor de moeda e gráfico -->
-      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-        <div class="flex flex-col-2 gap-4 mb-4">
-          <!-- Par e preço -->
-          <form class="flex flex-col items-start w-full lg:w-auto" method="get" th:action="@{/dashboard}">
-            <label for="pair_select" class="block text-sm font-medium text-gray-400 mb-1">Moeda</label>
-            <div id="pair" th:attr="hx-get=@{/dashboard/fragment-pares(symbol=${moedaSelecionada})}" hx-trigger="load"
-              hx-target="#pair" hx-swap="outerHTML">
-              <select disabled class="w-full lg:w-40 border border-gray-300 rounded px-3 py-2 text-lg font-medium text-gray-800 bg-white">
-                <option>Carregando...</option>
-              </select>
-            </div>
-          </form>
-
-
-          <!-- <div class="w-full lg:w-auto">
+            <!-- <div class="w-full lg:w-auto">
             <label for="precoAtualHeader" class="block text-sm font-medium text-gray-400 mb-1">Preço Atual</label>
             <div class="w-auto border border-0 rounded px-0 py-2 text-lg font-medium text-white bg-transparent">
               <div id="precoAtualHeader"
@@ -47,240 +67,319 @@
             </div>
           </div> -->
 
-          <div class="w-full lg:w-auto">
-            <label for="intervalo" class="block text-sm font-medium text-gray-400 mb-1">Intervalo</label>
-            <select name="intervalo" id="intervalo"
-              class="w-full lg:w-auto border border-0 rounded px-0 py-2 text-lg font-medium text-white bg-transparent">
-              <option value="1s">1s</option>
-              <option value="1m" selected>1m</option>
-              <option value="15m">15m</option>
-              <option value="1h">1h</option>
+            <div class="w-full lg:w-auto">
+              <label
+                for="intervalo"
+                class="block text-sm font-medium text-gray-400 mb-1"
+                >Intervalo</label
+              >
+              <select
+                name="intervalo"
+                id="intervalo"
+                class="w-full lg:w-auto border border-0 rounded px-0 py-2 text-lg font-medium text-white bg-transparent"
+              >
+                <option value="1s">1s</option>
+                <option value="1m" selected>1m</option>
+                <option value="15m">15m</option>
+                <option value="1h">1h</option>
+              </select>
+            </div>
+          </div>
+          <!-- Gráfico -->
 
-            </select>
+          <div
+            id="grafico-wrapper"
+            class="relative w-full h-80 md:aspect-video"
+            hx-get="/grafico-fragment"
+            hx-trigger="load"
+            hx-target="#grafico-wrapper"
+            x-swap="outerHTML"
+          >
+            <!-- Enquanto carrega, exibe um spinner ou mensagem -->
           </div>
         </div>
-        <!-- Gráfico -->
+      </div>
 
-        <div id="grafico-wrapper" class="relative w-full h-80 md:aspect-video" hx-get="/grafico-fragment" hx-trigger="load"
-          hx-target="#grafico-wrapper" x-swap="outerHTML">
-          <!-- Enquanto carrega, exibe um spinner ou mensagem -->
+      <!-- Operações -->
+      <div class="lg:col-span-1 space-y-6">
+        <div
+          class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden"
+        >
+          <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2">
+            <img
+              th:if="${detalhesMoeda.iconUrl}"
+              th:src="${detalhesMoeda.iconUrl}"
+              th:alt="${moedaSelecionada}"
+              class="w-8 h-8"
+              onerror="this.onerror=null; this.src='/images/coin.png';"
+            />
+            Detalhes (<span th:text="${moedaSelecionada}"></span>)
+          </h3>
+
+          <form
+            class="space-y-4"
+            method="post"
+            th:action="@{/dashboard/operar}"
+            id="formOperacao"
+          >
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1"
+                >Preço Atual</label
+              >
+              <div
+                id="precoOperacao"
+                th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-hidden')}"
+                hx-trigger="load"
+                hx-target="#precoOperacao"
+                hx-swap="outerHTML"
+              >
+                <input type="hidden" value="..." />
+              </div>
+
+              <div
+                id="precoAtualInput"
+                th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-input')}"
+                hx-trigger="load"
+                hx-target="#precoAtualInput"
+                hx-swap="outerHTML"
+              >
+                <input readonly value="Carregando..." type="text" />
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-400 mb-1"
+                  >Quantidade</label
+                >
+                <input
+                  class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded"
+                  id="quantidadeInput"
+                  name="quantidade"
+                  step="0.0001"
+                  type="number"
+                  min="0.0001"
+                  value="0.0001"
+                />
+              </div>
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-400 mb-1"
+                  >Total Estimado</label
+                >
+                <input
+                  class="bg-white/10 text-gray-200 w-full mb-4 px-3 py-2 rounded"
+                  id="totalEstimado"
+                  readonly=""
+                  type="text"
+                  value="$0.00000000"
+                />
+                <input
+                  id="tipoOperacao"
+                  name="tipo"
+                  type="hidden"
+                  value="COMPRA"
+                /><input
+                  name="moeda"
+                  th:value="${moedaSelecionada}"
+                  type="hidden"
+                />
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <button
+                id="botaoCompra"
+                class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold"
+                data-tipo="COMPRA"
+                type="submit"
+              >
+                Comprar</button
+              ><button
+                id="botaoVenda"
+                class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 font-bold"
+                data-tipo="VENDA"
+                type="submit"
+              >
+                Vender
+              </button>
+            </div>
+          </form>
         </div>
-
-      </div>
-    </div>
-
-    <!-- Operações -->
-    <div class="lg:col-span-1 space-y-6">
-      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-                <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
-          <img th:if="${detalhesMoeda.iconUrl}" th:src="${detalhesMoeda.iconUrl}" th:alt="${moedaSelecionada}"
-            class="w-8 h-8" onerror="this.onerror=null; this.src='/images/coin.png';" />
-          Detalhes (<span th:text="${moedaSelecionada}"></span>)
-        </h3>
-
-        <form class="space-y-4" method="post" th:action="@{/dashboard/operar}" id="formOperacao">
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Preço Atual</label>
-            <div id="precoOperacao"
-              th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-hidden')}"
-              hx-trigger="load" hx-target="#precoOperacao" hx-swap="outerHTML">
-              <input type="hidden" value="..." />
-            </div>
-
-            <div id="precoAtualInput" 
-              th:attr="hx-get=@{/dashboard/fragment-preco(symbol=${moedaSelecionada}, fragment='preco-input')}"
-              hx-trigger="load" hx-target="#precoAtualInput" hx-swap="outerHTML">
-              <input readonly value="Carregando..." type="text" />
-            </div>
-          </div>
-
-          <div class="flex items-start gap-4">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-400 mb-1">Quantidade</label>
-              <input class="bg-white/10 text-gray-200 w-full mb-2 px-3 py-2 rounded" id="quantidadeInput" name="quantidade" step="0.0001"
-                type="number" min="0.0001" value="0.0001" />
-            </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-400 mb-1">Total
-                Estimado</label>
-              <input class="bg-white/10 text-gray-200 w-full mb-4 px-3 py-2 rounded" id="totalEstimado" readonly="" type="text"
-                value="$0.00000000" />
-              <input id="tipoOperacao" name="tipo" type="hidden" value="COMPRA" /><input name="moeda"
-                th:value="${moedaSelecionada}" type="hidden" />
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <button id="botaoCompra" class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold"
-              data-tipo="COMPRA" type="submit">
-              Comprar</button><button id="botaoVenda" class="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 font-bold"
-              data-tipo="VENDA" type="submit">
-              Vender
-            </button>
-          </div>
-        </form>
-      </div>
-      <div class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden">
-        <!-- <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
+        <div
+          class="lg:bg-white/5 lg:p-4 lg:rounded-2xl shadow lg:border border-violet-500/30 overflow-hidden"
+        >
+          <!-- <h3 class="text-lg text-white font-bold mb-4 flex items-center gap-2 ">
           <img th:if="${detalhesMoeda.iconUrl}" th:src="${detalhesMoeda.iconUrl}" th:alt="${moedaSelecionada}"
             class="w-8 h-8" onerror="this.onerror=null; this.src='/images/coin.png';" />
           Detalhes (<span th:text="${moedaSelecionada}"></span>)
         </h3> -->
-        <p class="text-sm text-white">
-          Saldo (<span th:text="${moedaSelecionada}"></span>):
-          <span class="float-right font-bold text-gray-200"
-            th:text="${#numbers.formatDecimal(detalhesMoeda.saldoMoeda, 1, 'COMMA', 4, 'POINT')}"></span>
-        </p>
-        <p class="text-sm text-white">
-          Preço Médio (<span th:text="${moedaSelecionada}"></span>):
-          <span class="float-right font-bold text-gray-200"
-            th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.precoMedio, 1, 'COMMA', 8, 'POINT')}"></span>
-        </p>
-        <p class="text-sm text-white">
-          Saldo disponível (USDT):
-          <span class="float-right font-bold text-gray-200"
-            th:text="'$' + ${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 8, 'POINT')}"></span>
-        </p>
+          <p class="text-sm text-white">
+            Saldo (<span th:text="${moedaSelecionada}"></span>):
+            <span
+              class="float-right font-bold text-gray-200"
+              th:text="${#numbers.formatDecimal(detalhesMoeda.saldoMoeda, 1, 'COMMA', 4, 'POINT')}"
+            ></span>
+          </p>
+          <p class="text-sm text-white">
+            Preço Médio (<span th:text="${moedaSelecionada}"></span>):
+            <span
+              class="float-right font-bold text-gray-200"
+              th:text="'$' + ${#numbers.formatDecimal(detalhesMoeda.precoMedio, 1, 'COMMA', 8, 'POINT')}"
+            ></span>
+          </p>
+          <p class="text-sm text-white">
+            Saldo disponível (USDT):
+            <span
+              class="float-right font-bold text-gray-200"
+              th:text="'$' + ${#numbers.formatDecimal(saldoFiat, 1, 'COMMA', 8, 'POINT')}"
+            ></span>
+          </p>
+        </div>
       </div>
     </div>
 
-  </div>
+    <!-- Gráfico estático por enquanto -->
+    <!-- Dentro do corpo da página principal -->
 
+    <!-- Script global que será usado após o fragmento -->
+    <script>
+      const intervalo = document.getElementById("intervalo");
+      async function fetchAndRender() {
+        try {
+          const res = await fetch(
+            `/grafico-json?symbol=${parSelecionado}&interval=${intervalo.value}`
+          );
+          const candles = await res.json();
 
-  <!-- Gráfico estático por enquanto -->
-  <!-- Dentro do corpo da página principal -->
+          if (!Array.isArray(candles)) throw new Error("Formato inválido");
 
-  <!-- Script global que será usado após o fragmento -->
-  <script>
-    const intervalo = document.getElementById('intervalo')
-    async function fetchAndRender() {
-      try {
-        const res = await fetch(`/grafico-json?symbol=${parSelecionado}&interval=${intervalo.value}`);
-        const candles = await res.json();
+          const labels = candles.map((c) =>
+            new Date(c.time).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          );
+          const dados = candles.map((c) => c.close);
 
-        if (!Array.isArray(candles)) throw new Error("Formato inválido");
-
-        const labels = candles.map(c => new Date(c.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-        const dados = candles.map(c => c.close);
-
-        if (window.chart && window.chart.data) {
-          window.chart.data.labels = labels;
-          window.chart.data.datasets[0].data = dados;
-          window.chart.update();
-        } else {
-          console.error("Gráfico não inicializado.");
+          if (window.chart && window.chart.data) {
+            window.chart.data.labels = labels;
+            window.chart.data.datasets[0].data = dados;
+            window.chart.update();
+          } else {
+            console.error("Gráfico não inicializado.");
+          }
+        } catch (err) {
+          console.error("Erro ao buscar dados:", err);
         }
-      } catch (err) {
-        console.error("Erro ao buscar dados:", err);
       }
-    }
 
-    document.body.addEventListener('htmx:afterSettle', function (evt) {
-      if (evt.target.id === 'grafico-wrapper') {
-        console.log("Fragmento carregado, buscando dados...");
-        fetchAndRender();
-        setInterval(fetchAndRender, 1000)
-      }
-    });
-  </script>
+      document.body.addEventListener("htmx:afterSettle", function (evt) {
+        if (evt.target.id === "grafico-wrapper") {
+          console.log("Fragmento carregado, buscando dados...");
+          fetchAndRender();
+          setInterval(fetchAndRender, 1000);
+        }
+      });
+    </script>
 
-  <!-- WebSocket + cálculo total -->
-  <script th:inline="javascript">
-    const parSelecionado = /*[[${moedaSelecionada}]]*/ "BTCUSDT";
+    <!-- WebSocket + cálculo total -->
+    <script th:inline="javascript">
+      const parSelecionado = /*[[${moedaSelecionada}]]*/ "BTCUSDT";
 
-    const precoInput = document.getElementById("precoAtualInput");
-    const precoHeader = document.getElementById("precoAtualHeader");
-    const tituloOperacao = document.getElementById("tituloOperacao");
-
-    const quantidadeInput = document.getElementById("quantidadeInput");
-    const totalEstimado = document.getElementById("totalEstimado");
-
-    const formOperacao = document.getElementById("formOperacao");
-    const botaoCompra = document.getElementById("botaoCompra");
-    const botaoVenda = document.getElementById("botaoVenda");
-
-    const tipoOperacaoInput = document.getElementById("tipoOperacao");
-
-    let precoAtual = 0;
-    let operacaoSelecionada = "";
-
-    function atualizarTotal() {
-      const qtd = parseFloat(quantidadeInput.value).toFixed(4);
-      if (!isNaN(qtd) && !isNaN(precoAtual)) {
-        const total = qtd * precoAtual;
-        totalEstimado.value = `$${total.toFixed(8)}`;
-      } else {
-        totalEstimado.value = "$0.00";
-      }
-    }
-
-    quantidadeInput.addEventListener("input", atualizarTotal);
-
-    const ws = new WebSocket(
-      "wss://stream.binance.com:9443/ws/" +
-      parSelecionado.toLowerCase() +
-      "@ticker"
-    );
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      precoAtual = parseFloat(data.c).toFixed(8);
-
-      //tem que fazer isso aqui novamente, pois quando carrega a pagina o htmx substitui o div e o precoHeader nao pode mais ser encontrado, deve ser buscado novamente.
-      const precoHeader = document.getElementById("precoAtualHeader");
       const precoInput = document.getElementById("precoAtualInput");
+      const precoHeader = document.getElementById("precoAtualHeader");
+      const tituloOperacao = document.getElementById("tituloOperacao");
 
-      if (precoInput) precoInput.value = `$${precoAtual}`;
-      if (precoHeader) precoHeader.innerHTML = ` ($${precoAtual})`;
+      const quantidadeInput = document.getElementById("quantidadeInput");
+      const totalEstimado = document.getElementById("totalEstimado");
 
-      const precoOperacao = document.getElementById("precoOperacao");
-      if (precoOperacao) precoOperacao.value = precoAtual.toString();
-      atualizarTotal();
-    };
+      const formOperacao = document.getElementById("formOperacao");
+      const botaoCompra = document.getElementById("botaoCompra");
+      const botaoVenda = document.getElementById("botaoVenda");
 
-    // opcional: exibir nome do par no título
-    if (tituloOperacao) {
-      tituloOperacao.textContent = `Operar ${parSelecionado}`;
-    }
+      const tipoOperacaoInput = document.getElementById("tipoOperacao");
 
-    formOperacao.addEventListener("submit", function (e) {
-      botaoCompra.disabled = true;
-      botaoVenda.disabled = true;
+      let precoAtual = 0;
+      let operacaoSelecionada = "";
 
-      botaoCompra.textContent = "Processando...";
-      botaoVenda.textContent = "Processando...";
-    });
+      function atualizarTotal() {
+        const qtd = parseFloat(quantidadeInput.value).toFixed(4);
+        if (!isNaN(qtd) && !isNaN(precoAtual)) {
+          const total = qtd * precoAtual;
+          totalEstimado.value = `$${total.toFixed(8)}`;
+        } else {
+          totalEstimado.value = "$0.00";
+        }
+      }
 
-    botaoCompra.addEventListener("click", function (e) {
-      e.preventDefault();
-      operacaoSelecionada = "COMPRA";
-      confirmarEEnviar();
-    });
+      quantidadeInput.addEventListener("input", atualizarTotal);
 
-    botaoVenda.addEventListener("click", function (e) {
-      e.preventDefault();
-      operacaoSelecionada = "VENDA";
-      confirmarEEnviar();
-    });
+      const ws = new WebSocket(
+        "wss://stream.binance.com:9443/ws/" +
+          parSelecionado.toLowerCase() +
+          "@ticker"
+      );
 
-    function confirmarEEnviar() {
-      if (
-        confirm(
-          `Deseja realmente realizar a operação de ${operacaoSelecionada}?`
-        )
-      ) {
-        tipoOperacaoInput.value = operacaoSelecionada;
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        precoAtual = parseFloat(data.c).toFixed(8);
 
+        //tem que fazer isso aqui novamente, pois quando carrega a pagina o htmx substitui o div e o precoHeader nao pode mais ser encontrado, deve ser buscado novamente.
+        const precoHeader = document.getElementById("precoAtualHeader");
+        const precoInput = document.getElementById("precoAtualInput");
+
+        if (precoInput) precoInput.value = `$${precoAtual}`;
+        if (precoHeader) precoHeader.innerHTML = ` ($${precoAtual})`;
+
+        const precoOperacao = document.getElementById("precoOperacao");
+        if (precoOperacao) precoOperacao.value = precoAtual.toString();
+        atualizarTotal();
+      };
+
+      // opcional: exibir nome do par no título
+      if (tituloOperacao) {
+        tituloOperacao.textContent = `Operar ${parSelecionado}`;
+      }
+
+      formOperacao.addEventListener("submit", function (e) {
         botaoCompra.disabled = true;
         botaoVenda.disabled = true;
 
         botaoCompra.textContent = "Processando...";
         botaoVenda.textContent = "Processando...";
+      });
 
+      botaoCompra.addEventListener("click", function (e) {
+        e.preventDefault();
+        operacaoSelecionada = "COMPRA";
         formOperacao.submit();
-      }
-    }
-  </script>
-</body>
+        //confirmarEEnviar();
+      });
 
+      botaoVenda.addEventListener("click", function (e) {
+        e.preventDefault();
+        operacaoSelecionada = "VENDA";
+        formOperacao.submit();
+        //confirmarEEnviar();
+      });
+
+      function confirmarEEnviar() {
+        if (
+          confirm(
+            `Deseja realmente realizar a operação de ${operacaoSelecionada}?`
+          )
+        ) {
+          tipoOperacaoInput.value = operacaoSelecionada;
+
+          botaoCompra.disabled = true;
+          botaoVenda.disabled = true;
+
+          botaoCompra.textContent = "Processando...";
+          botaoVenda.textContent = "Processando...";
+
+          formOperacao.submit();
+        }
+      }
+    </script>
+  </body>
 </html>

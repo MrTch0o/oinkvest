@@ -101,6 +101,7 @@ public class DashboardController {
         return String.format("fragments/fragment-preco :: %s", fragment);
     }
 
+
     @PostMapping("/dashboard/operar")
     public String operar(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
             @RequestParam String tipo,
