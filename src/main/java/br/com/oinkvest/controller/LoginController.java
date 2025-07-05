@@ -1,10 +1,13 @@
 package br.com.oinkvest.controller;
 
 import br.com.oinkvest.model.Carteira;
+import br.com.oinkvest.model.Role;
 import br.com.oinkvest.model.Usuario;
+import br.com.oinkvest.repository.RoleRepository;
 import br.com.oinkvest.service.UsuarioService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +26,8 @@ public class LoginController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
+
     @GetMapping("/")
     public String rootRedirect(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
@@ -36,8 +41,7 @@ public class LoginController {
     @GetMapping("/login")
     public String login(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            // O usuário já está autenticado
-            return "redirect:/dashboard"; // ou qualquer página padrão pós-login
+            return "redirect:/dashboard";
         }
         return "login";
     }
@@ -49,8 +53,14 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String processRegister(@ModelAttribute Usuario usuario) {
+    public String processRegister(@ModelAttribute Usuario usuario, @RequestParam("perfilEscolhido") String perfilEscolhido) {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        
+        List<String> rolesPermitidas = List.of("ROLE_ANALISTA", "ROLE_CARTEIRA");
+        
+        if(!rolesPermitidas.contains(perfilEscolhido)) {
+            return "register";
+        }
 
         Carteira carteira = new Carteira();
         carteira.setSaldoFiat(BigDecimal.ZERO);
@@ -58,7 +68,7 @@ public class LoginController {
         carteira.setUsuario(usuario);
         usuario.setCarteira(carteira);
 
-        usuarioService.salvar(usuario);
+        usuarioService.salvar(usuario, perfilEscolhido);
         return "redirect:/login?registered";
     }
 }
