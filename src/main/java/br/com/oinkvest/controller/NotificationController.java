@@ -34,11 +34,14 @@ public class NotificationController {
     public String mostrarAlertas(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
             @RequestParam(required = false) String filtro, Model model) {
         Usuario usuario = usuarioDetails.getUsuario();
-        model.addAttribute("notificacao", new Notificacao());
+
+        model.addAttribute("alerta", new Notificacao()); // ✅ CORRIGIDO
+        model.addAttribute("pares", binanceService.listarParesUsdt()); // necessário para o select
         model.addAttribute("alertas", service.listarPorUsuario(usuario));
         model.addAttribute("filtro", filtro);
         model.addAttribute("title", "Alertas de Preço");
         model.addAttribute("content", "notifications");
+
         return "fragments/layout";
     }
 
@@ -60,14 +63,40 @@ public class NotificationController {
         return "fragments/fragment-pares :: select-pares-notificacoes";
     }
 
+    @GetMapping("/editar/{id}")
+    public String editarAlerta(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails,
+            Model model) {
+
+        Usuario usuario = usuarioDetails.getUsuario();
+        Notificacao alerta = service.buscarPorId(id);
+
+        model.addAttribute("alerta", alerta);
+        model.addAttribute("pares", binanceService.listarParesUsdt()); // lista de moedas para o select
+        model.addAttribute("moedaSelecionada", alerta.getMoeda());
+        model.addAttribute("title", "Editar Alerta");
+        model.addAttribute("content", "notifications");
+
+        return "fragments/layout";
+    }
+
     @PostMapping
-    public String criarAlerta(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
+    public String criarOuEditarAlerta(
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails,
+            @RequestParam(required = false) Long id,
             @RequestParam String moeda,
             @RequestParam BigDecimal precoAlvo,
             @RequestParam Notificacao.Condicao condicao) {
 
         Usuario usuario = usuarioDetails.getUsuario();
-        service.criarAlerta(usuario, moeda, precoAlvo, condicao);
+
+        if (id != null) {
+            service.atualizarAlerta(id, moeda, precoAlvo, condicao);
+        } else {
+            service.criarAlerta(usuario, moeda, precoAlvo, condicao);
+        }
+
         return "redirect:/notifications";
     }
 

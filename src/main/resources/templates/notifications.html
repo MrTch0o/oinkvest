@@ -1,109 +1,55 @@
 <div th:fragment="content" class="p-4">
   <h2 class="text-2xl text-white font-bold mb-2">Alertas de Preço</h2>
-  <p class="text-gray-600 mb-4">
-    Configure alertas para ser notificado quando os preços atingirem determinados valores
-  </p>
+  <p class="text-gray-600 mb-4">Configure alertas para ser notificado quando os preços atingirem determinados valores</p>
 
   <div class="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Formulário de criação de alerta -->
-    <form
-      th:action="@{/notifications}"
-      method="post"
-      class="bg-white/5 p-4 md:p-6 rounded-2xl shadow border border-violet-500/30 overflow-hidden relative"
-    >
-      <h3 class="text-lg text-white font-semibold mb-2">Criar Novo Alerta</h3>
+    <!-- Formulário de criação/edição de alerta -->
+    <form th:action="@{/notifications}" method="post" class="bg-white/5 p-4 md:p-6 rounded-2xl shadow border border-violet-500/30 overflow-hidden relative">
+      <input type="hidden" name="id" th:value="${alerta.id}" />
+      <h3 class="text-lg text-white font-semibold mb-2">[[${alerta.id} != null ? 'Editar Alerta' : 'Criar Novo Alerta']]</h3>
 
       <label class="block text-gray-300 mb-1">Criptomoeda</label>
-      <div
-        id="select-moeda"
-        th:attr="hx-get=@{/notifications/fragment-pares(symbol=${moedaSelecionada})}"
-        hx-trigger="load"
-        hx-target="#select-moeda"
-        hx-swap="outerHTML"
-      >
-        <select disabled class="w-full p-2 border rounded mb-3">
-          <option>Carregando...</option>
-        </select>
-      </div>
+      <select name="moeda" class="w-full p-2 border rounded mb-3">
+        <option th:each="par : ${pares}" th:value="${par}" th:text="${par}" th:selected="${par == alerta.moeda}"></option>
+      </select>
 
       <label class="block text-gray-300 mb-1">Condição</label>
-      <select
-        id="condicaoSelect"
-        name="condicao"
-        class="w-full p-2 border rounded mb-3"
-      >
-        <option value="ACIMA">Acima do valor</option>
-        <option value="ABAIXO">Abaixo do valor</option>
+      <select name="condicao" class="w-full p-2 border rounded mb-3">
+        <option value="ACIMA" th:selected="${alerta.condicao?.name() == 'ACIMA'}">Acima do valor</option>
+        <option value="ABAIXO" th:selected="${alerta.condicao?.name() == 'ABAIXO'}">Abaixo do valor</option>
       </select>
 
       <label class="block text-gray-300 mb-1">Preço Alvo</label>
-      <input
-        id="precoAlvoInput"
-        type="number"
-        min="0.00000001"
-        step="0.00000001"
-        name="precoAlvo"
-        class="w-full bg-white/90 p-2 border rounded mb-3"
-      />
-      <button
-        type="submit"
-        class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity"
-      >
-        Criar Alerta
+      <input type="number" min="0.00000001" step="0.00000001" name="precoAlvo" th:value="${alerta.precoAlvo}" class="w-full bg-white/90 p-2 border rounded mb-3" />
+
+      <button type="submit" class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity">
+        [[${alerta.id} != null ? 'Salvar Alerta' : 'Criar Alerta']]
       </button>
     </form>
 
     <!-- Card do lado direito -->
     <div class="bg-white/5 p-6 rounded-2xl shadow border border-violet-500/30 space-y-4">
       <h3 class="text-lg font-semibold mb-2 text-white">Seus Alertas Ativos</h3>
-
-      <!-- Formulário de busca dentro do card, mas FORA do wrapper HTMX -->
-      <form
-        method="get"
-        th:action="@{/notifications/fragment-alertas}"
-        hx-get="/notifications/fragment-alertas"
-        hx-target="#lista-alertas-wrapper"
-        hx-swap="innerHTML"
-        class="flex"
-      >
-        <input
-          type="text"
-          name="filtro"
-          th:value="${filtro}"
-          placeholder="Buscar moeda..."
-          class="flex-grow px-4 py-2 border border-gray-600 bg-white/90 text-black rounded-l-md focus:outline-none focus:ring-2 focus:ring-violet-500"
-        />
-        <button
-          type="submit"
-          class="px-4 bg-violet-600 text-white rounded-r-md hover:bg-violet-700 transition"
-        >
-          Buscar
-        </button>
+      <form method="get" th:action="@{/notifications/fragment-alertas}" hx-get="/notifications/fragment-alertas" hx-target="#lista-alertas-wrapper" hx-swap="innerHTML" class="flex">
+        <input type="text" name="filtro" th:value="${filtro}" placeholder="Buscar moeda..." class="flex-grow px-4 py-2 border border-gray-600 bg-white/90 text-black rounded-l-md focus:outline-none focus:ring-2 focus:ring-violet-500" />
+        <button type="submit" class="px-4 bg-violet-600 text-white rounded-r-md hover:bg-violet-700 transition">Buscar</button>
       </form>
-
-      <!-- Lista de alertas carregada via HTMX -->
-      <div
-        id="lista-alertas-wrapper"
-        hx-get="/notifications/fragment-alertas"
-        hx-trigger="load"
-        hx-target="#lista-alertas-wrapper"
-        hx-swap="innerHTML"
-      >
-        Carregando alertas...
-      </div>
+      <div id="lista-alertas-wrapper" hx-get="/notifications/fragment-alertas" hx-trigger="load" hx-target="#lista-alertas-wrapper" hx-swap="innerHTML">Carregando alertas...</div>
     </div>
   </div>
 
   <script>
-    const input = document.getElementById("precoAlvoInput");
-    input.addEventListener("blur", () => {
-      const valor = input.value.trim().replace(",", ".");
-      const numero = Number(valor);
-      if (!isNaN(numero)) {
-        input.value = numero.toFixed(8);
-      } else {
-        input.value = "";
-      }
-    });
+    const input = document.querySelector("input[name='precoAlvo']");
+    if (input) {
+      input.addEventListener("blur", () => {
+        const valor = input.value.trim().replace(",", ".");
+        const numero = Number(valor);
+        if (!isNaN(numero)) {
+          input.value = numero.toFixed(8);
+        } else {
+          input.value = "";
+        }
+      });
+    }
   </script>
 </div>

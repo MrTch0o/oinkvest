@@ -46,4 +46,18 @@ public class NotificationService {
         }
         return notificacaoRepository.findByUsuarioAndMoedaContainingIgnoreCase(usuario, filtro.trim());
     }
+
+    public Notificacao buscarPorId(Long id) {
+        return notificacaoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Alerta não encontrado com id: " + id));
+    }
+
+    @Transactional
+    public void atualizarAlerta(Long id, String moeda, BigDecimal precoAlvo, Notificacao.Condicao condicao) {
+        Notificacao alerta = buscarPorId(id);
+        alerta.setMoeda(moeda);
+        alerta.setPrecoAlvo(precoAlvo);
+        alerta.setCondicao(condicao);
+        notificacaoRepository.save(alerta);
+    }
 }

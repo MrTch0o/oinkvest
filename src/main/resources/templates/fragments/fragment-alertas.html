@@ -1,32 +1,41 @@
-
 <div id="lista-alertas" th:fragment="lista-alertas">
-    <h3 class="text-lg font-semibold mb-2 text-white">Seus Alertas Ativos</h3>
+  <h3 class="text-lg font-semibold mb-2 text-white">Seus Alertas Ativos</h3>
 
-    <div
-        th:each="alerta, iterStat : ${alertas}"
-        class="flex justify-between items-center py-3 border-b border-white/10"
-    >
-        <div>
-            <strong class="text-white" th:text="${alerta.moeda}">BTC</strong>
-            <span
-                class="text-gray-300"
-                th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"
-            ></span>
-            <span
-                class="text-gray-300"
-                th:text="'$' + ${#numbers.formatDecimal(alerta.precoAlvo, 1, 'COMMA', 2, 'POINT')}"
-            ></span>
-        </div>
-        <form
-            th:action="@{'/notifications/remover/' + ${alerta.id}}"
-            method="post"
-        >
-            <button
-                type="submit"
-                class="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
-            >
-                🗑
-            </button>
-        </form>
+  <div
+    th:each="alerta, iterStat : ${alertas}"
+    class="flex justify-between items-center py-3 border-b border-white/10"
+  >
+    <div>
+      <strong class="text-white" th:text="${alerta.moeda}">BTC</strong>
+      <span
+        class="text-gray-300"
+        th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"
+      ></span>
+      <span
+        class="text-gray-300"
+        th:text="'$' + ${#numbers.formatDecimal(alerta.precoAlvo, 1, 'COMMA', 2, 'POINT')}"
+      ></span>
     </div>
+    <div class="flex items-center space-x-2">
+      <a
+        th:href="@{'/notifications/editar/' + ${alerta.id}}"
+        class="p-2 rounded-full text-gray-500 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
+        title="Editar Alerta"
+      >
+        ✏️
+      </a>
+      <form
+        th:action="@{'/notifications/remover/' + ${alerta.id}}"
+        method="post"
+      >
+        <button
+          type="submit"
+          class="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+          title="Remover Alerta"
+        >
+          🗑
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
