@@ -31,13 +31,26 @@ public class NotificationController {
     }
 
     @GetMapping
-    public String mostrarAlertas(@AuthenticationPrincipal UsuarioDetails usuarioDetails, Model model) {
+    public String mostrarAlertas(@AuthenticationPrincipal UsuarioDetails usuarioDetails,
+            @RequestParam(required = false) String filtro, Model model) {
         Usuario usuario = usuarioDetails.getUsuario();
         model.addAttribute("notificacao", new Notificacao());
-        model.addAttribute("notificacoes", service.listarPorUsuario(usuario));
+        model.addAttribute("alertas", service.listarPorUsuario(usuario));
+        model.addAttribute("filtro", filtro);
         model.addAttribute("title", "Alertas de Preço");
         model.addAttribute("content", "notifications");
         return "fragments/layout";
+    }
+
+    @GetMapping("/fragment-alertas")
+    public String fragmentAlertas(
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails,
+            @RequestParam(required = false) String filtro,
+            Model model) {
+
+        Usuario usuario = usuarioDetails.getUsuario();
+        model.addAttribute("alertas", service.listarPorUsuarioEPorMoeda(usuario, filtro));
+        return "fragments/fragment-alertas :: lista-alertas";
     }
 
     @GetMapping("/fragment-pares")

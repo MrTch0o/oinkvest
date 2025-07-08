@@ -39,4 +39,11 @@ public class NotificationService {
     public void removerAlerta(Long id) {
         notificacaoRepository.deleteById(id);
     }
+
+    public List<Notificacao> listarPorUsuarioEPorMoeda(Usuario usuario, String filtro) {
+        if (filtro == null || filtro.trim().isEmpty()) {
+            return listarPorUsuario(usuario);
+        }
+        return notificacaoRepository.findByUsuarioAndMoedaContainingIgnoreCase(usuario, filtro.trim());
+    }
 }

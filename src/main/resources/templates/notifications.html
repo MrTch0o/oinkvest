@@ -1,18 +1,17 @@
 <div th:fragment="content" class="p-4">
   <h2 class="text-2xl text-white font-bold mb-2">Alertas de Preço</h2>
   <p class="text-gray-600 mb-4">
-    Configure alertas para ser notificado quando os preços atingirem
-    determinados valores
+    Configure alertas para ser notificado quando os preços atingirem determinados valores
   </p>
 
   <div class="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Formulário -->
+    <!-- Formulário de criação de alerta -->
     <form
       th:action="@{/notifications}"
       method="post"
       class="bg-white/5 p-4 md:p-6 rounded-2xl shadow border border-violet-500/30 overflow-hidden relative"
     >
-      <h3 class="text-lg text-white  font-semibold mb-2">Criar Novo Alerta</h3>
+      <h3 class="text-lg text-white font-semibold mb-2">Criar Novo Alerta</h3>
 
       <label class="block text-gray-300 mb-1">Criptomoeda</label>
       <div
@@ -46,40 +45,62 @@
         name="precoAlvo"
         class="w-full bg-white/90 p-2 border rounded mb-3"
       />
-      <button type="submit" class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r 
-      from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity">
+      <button
+        type="submit"
+        class="w-full text-white py-3 rounded-lg font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity"
+      >
         Criar Alerta
-      </button>      
+      </button>
     </form>
 
-    <!-- Lista de Alertas -->
- <div class="bg-white/5 p-6 rounded-2xl shadow border border-violet-500/30">
+    <!-- Card do lado direito -->
+    <div class="bg-white/5 p-6 rounded-2xl shadow border border-violet-500/30 space-y-4">
       <h3 class="text-lg font-semibold mb-2 text-white">Seus Alertas Ativos</h3>
-      
-      <div th:each="alerta, iterStat : ${alertas}"
-        class="flex justify-between items-center py-3 border-b border-white/10">
-        <div>
-          <strong class="text-white" th:text="${alerta.moeda}">BTC</strong>
-          <span class="text-gray-300" th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"></span>
-          <span class="text-gray-300"
-            th:text="'$' + ${#numbers.formatDecimal(alerta.precoAlvo, 1, 'COMMA', 2, 'POINT')}"></span>
-        </div>
-        <form th:action="@{'/notifications/remover/' + ${alerta.id}}" method="post">
-           <button type="submit" class="p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors">
-            🗑
-          </button>
-        </form>
+
+      <!-- Formulário de busca dentro do card, mas FORA do wrapper HTMX -->
+      <form
+        method="get"
+        th:action="@{/notifications/fragment-alertas}"
+        hx-get="/notifications/fragment-alertas"
+        hx-target="#lista-alertas-wrapper"
+        hx-swap="innerHTML"
+        class="flex"
+      >
+        <input
+          type="text"
+          name="filtro"
+          th:value="${filtro}"
+          placeholder="Buscar moeda..."
+          class="flex-grow px-4 py-2 border border-gray-600 bg-white/90 text-black rounded-l-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+        />
+        <button
+          type="submit"
+          class="px-4 bg-violet-600 text-white rounded-r-md hover:bg-violet-700 transition"
+        >
+          Buscar
+        </button>
+      </form>
+
+      <!-- Lista de alertas carregada via HTMX -->
+      <div
+        id="lista-alertas-wrapper"
+        hx-get="/notifications/fragment-alertas"
+        hx-trigger="load"
+        hx-target="#lista-alertas-wrapper"
+        hx-swap="innerHTML"
+      >
+        Carregando alertas...
       </div>
+    </div>
   </div>
+
   <script>
     const input = document.getElementById("precoAlvoInput");
-
     input.addEventListener("blur", () => {
-      const valor = input.value.trim().replace(",", "."); 
+      const valor = input.value.trim().replace(",", ".");
       const numero = Number(valor);
-
       if (!isNaN(numero)) {
-        input.value = numero.toFixed(8); 
+        input.value = numero.toFixed(8);
       } else {
         input.value = "";
       }

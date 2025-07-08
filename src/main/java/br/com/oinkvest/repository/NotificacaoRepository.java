@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> {
     List<Notificacao> findByUsuario(Usuario usuario);
+    List<Notificacao> findByUsuarioAndMoedaContainingIgnoreCase(Usuario usuario, String moeda);
 }
