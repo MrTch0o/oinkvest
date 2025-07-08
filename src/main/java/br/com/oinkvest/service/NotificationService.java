@@ -19,6 +19,14 @@ public class NotificationService {
     private NotificacaoRepository notificacaoRepository;
 
     public Notificacao criarAlerta(Usuario usuario, String moeda, BigDecimal precoAlvo, Notificacao.Condicao condicao) {
+
+        System.out.println("======= DEBUG SERVICE criarAlerta=======");
+        System.out.println("Usuário: " + usuario.getId());
+        System.out.println("Moeda: " + moeda);
+        System.out.println("Preço Alvo: " + precoAlvo);
+        System.out.println("Condição recebida no service: " + condicao);
+        System.out.println("=============================");
+
         Notificacao notificacao = Notificacao.builder()
                 .usuario(usuario)
                 .moeda(moeda)

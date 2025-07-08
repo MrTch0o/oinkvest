@@ -1,6 +1,7 @@
 package br.com.oinkvest.controller;
 
 import java.math.BigDecimal;
+import java.util.logging.Logger;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import br.com.oinkvest.model.Notificacao;
 import br.com.oinkvest.model.Usuario;
 import br.com.oinkvest.service.BinanceService;
 import br.com.oinkvest.service.NotificationService;
+import lombok.extern.java.Log;
 
 @Controller
 @RequestMapping("/notifications")
@@ -88,6 +90,14 @@ public class NotificationController {
             @RequestParam String moeda,
             @RequestParam BigDecimal precoAlvo,
             @RequestParam Notificacao.Condicao condicao) {
+
+        // 🔍 LOG para debug
+        System.out.println("======= DEBUG ALERTA =======");
+        System.out.println("ID: " + id);
+        System.out.println("Moeda: " + moeda);
+        System.out.println("Preço Alvo: " + precoAlvo);
+        System.out.println("Condição recebida: " + condicao);
+        System.out.println("============================");
 
         Usuario usuario = usuarioDetails.getUsuario();
 

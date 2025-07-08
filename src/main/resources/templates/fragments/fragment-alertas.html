@@ -9,7 +9,7 @@
       <strong class="text-white" th:text="${alerta.moeda}">BTC</strong>
       <span
         class="text-gray-300"
-        th:text="${alerta.condicao == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"
+        th:text="${alerta.condicao.name() == 'ACIMA' ? 'Acima de' : 'Abaixo de'}"
       ></span>
       <span
         class="text-gray-300"
