@@ -1,6 +1,12 @@
 package br.com.oinkvest.config;
 
+import br.com.oinkvest.model.Role;
+import br.com.oinkvest.repository.RoleRepository;
 import br.com.oinkvest.service.CustomUserDetailsService;
+
+import java.util.List;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +29,7 @@ public class SecurityConfig {
     // Autenticação baseada no banco de dados
     @Bean
     public DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService,
-                                                             PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider(userDetailsService);
         auth.setPasswordEncoder(passwordEncoder);
         return auth;
@@ -39,23 +45,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            //.csrf(csrf->csrf.disable())
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/api/mobile/login").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            );
+                // .csrf(csrf->csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/error", "/403", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/api/mobile/login").permitAll()
+                        .requestMatchers("/history").hasRole("CARTEIRA")
+                        .anyRequest().authenticated())
+                .exceptionHandling(handling -> handling
+                        .accessDeniedPage("/unauthorized"))
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll());
         return http.build();
+    }
+
+    @Bean
+    public CommandLineRunner initRoles(RoleRepository roleRepository) {
+        return args -> {
+            List<String> roles = List.of("ROLE_ANALISTA", "ROLE_CARTEIRA", "ROLE_ADMIN");
+
+            for (String nomeRole : roles) {
+                if (roleRepository.findByName(nomeRole) == null) {
+                    Role role = new Role();
+                    role.setName(nomeRole);
+                    roleRepository.save(role);
+                }
+            }
+        };
     }
 }
