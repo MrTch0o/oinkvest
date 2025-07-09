@@ -48,10 +48,12 @@ public class SecurityConfig {
                 // .csrf(csrf->csrf.disable())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/error", "/403", "/register", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/login", "/register", "/css/**", "/js/**", "/api/mobile/login").permitAll()
                         .requestMatchers("/history").hasRole("CARTEIRA")
                         .anyRequest().authenticated())
+                .exceptionHandling(handling -> handling
+                        .accessDeniedPage("/unauthorized"))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)

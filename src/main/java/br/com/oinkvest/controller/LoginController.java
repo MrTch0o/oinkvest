@@ -1,9 +1,7 @@
 package br.com.oinkvest.controller;
 
 import br.com.oinkvest.model.Carteira;
-import br.com.oinkvest.model.Role;
 import br.com.oinkvest.model.Usuario;
-import br.com.oinkvest.repository.RoleRepository;
 import br.com.oinkvest.service.UsuarioService;
 
 import java.math.BigDecimal;
