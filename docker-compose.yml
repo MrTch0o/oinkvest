@@ -1,0 +1,51 @@
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:15
+    container_name: oinkvest-db
+    environment:
+      POSTGRES_DB: oinkvest
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - oinkvest-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d oinkvest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Serviço da Aplicação Spring Boot
+  app:
+    build:
+      context: .
+    container_name: oinkvest-app
+    ports:
+      # Expõe a porta 8443 (HTTPS) definida no application.properties
+      - "8443:8443"
+    environment:
+      # Garante que o perfil 'dev' seja usado
+      - SPRING_PROFILES_ACTIVE=dev
+      # Sobrescreve a URL do banco para apontar para o contêiner 'db'
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/oinkvest
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - oinkvest-net
+
+volumes:
+  # Volume nomeado para persistir os dados do banco
+  postgres_data:
+
+networks:
+  # Rede customizada para os serviços
+  oinkvest-net:
+    driver: bridge
